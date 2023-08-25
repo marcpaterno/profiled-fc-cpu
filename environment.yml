@@ -1,0 +1,11 @@
+name: for-fc-cpu
+channels:
+  - conda-forge
+dependencies:
+  - cmake >= 3.26
+  - cxx-compiler
+  - tbb
+  - minuit2
+  - clang-format
+  - ca-certificates
+  - openssl
