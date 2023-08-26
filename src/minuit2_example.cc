@@ -4,6 +4,7 @@
 #include "Minuit2/MnPrint.h"
 #include "Minuit2/MnUserParameters.h"
 
+#include "minuit2_support.hh"
 #include "rosenbrock.hh"
 
 #include <iostream>
@@ -74,7 +75,10 @@ main()
   // documentation at
   // https://root.cern.ch/doc/master/classROOT_1_1Minuit2_1_1MnApplication.html#a8908d50d5d4f7f011b94bd10e51eacf7
   // for details.
-  double const toler = 1.e-6;
-  ROOT::Minuit2::FunctionMinimum result = minimizer(max_calls, toler/1.e-3);
-  std::cout << result << std::endl;
+  double toler = 1.e-6;
+  ROOT::Minuit2::FunctionMinimum result = minimizer(max_calls, toler / 1.e-3);
+  pfc::print_result_header(result, std::cout);
+  std::cout << '\n';
+  pfc::print_result(result, std::cout);
+  std::cout << '\n';
 }
