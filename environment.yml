@@ -9,3 +9,4 @@ dependencies:
   - clang-format
   - ca-certificates
   - openssl
+  - ninja
