@@ -2,17 +2,14 @@
 #define PROFILED_FC_CPU_ROSENBROCK_HH
 
 namespace pfc {
-  inline double
-  square(double x)
-  {
-    return x * x;
-  }
+  // rosenbrock is the standard Rosenbrock valley function.
+  double rosenbrock(double x, double y);
 
-  inline double
-  rosenbrock(double x, double y)
-  {
-    return square(1.0 - x) + 100.0 * square(y - square(x));
-  }
+  // rosenbrock_traced uses the Boost stacktrace library to
+  // print a full stack trace on each call. This is quite
+  // slow, and should only be used to explore the behavior
+  // of the code calling the function.
+  double rosenbrock_traced(double x, double y);
 }
 
 #endif

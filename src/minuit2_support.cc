@@ -18,12 +18,15 @@ namespace pfc {
   }
 
   void
-  print_result(ROOT::Minuit2::FunctionMinimum const& m, std::ostream& os)
+  print_result(double toler,
+               ROOT::Minuit2::FunctionMinimum const& m,
+               std::ostream& os)
   {
-    constexpr auto max_precision{std::numeric_limits<long double>::digits10 +
-                                 1};
+    auto max_precision{std::numeric_limits<long double>::digits10 + 1};
+    os << std::scientific << std::setprecision(max_precision);
+    os << toler << '\t';
     os << m.IsValid() << '\t' << m.NFcn() << '\t' << m.States().size() << '\t'
-       << std::scientific << std::setprecision(max_precision) << m.Fval();
+       << m.Fval();
     for (auto const& param : m.UserParameters().Parameters()) {
       os << '\t' << param.Value();
     }

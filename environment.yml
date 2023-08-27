@@ -2,6 +2,7 @@ name: for-fc-cpu
 channels:
   - conda-forge
 dependencies:
+  - boost-cpp >= 1.82
   - cmake >= 3.26
   - cxx-compiler
   - tbb

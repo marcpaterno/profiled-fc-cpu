@@ -11,5 +11,7 @@ namespace pfc {
   void print_result_header(ROOT::Minuit2::FunctionMinimum const&,
                            std::ostream& os);
 
-  void print_result(ROOT::Minuit2::FunctionMinimum const&, std::ostream& os);
+  void print_result(double toler,
+                    ROOT::Minuit2::FunctionMinimum const&,
+                    std::ostream& os);
 }

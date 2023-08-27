@@ -20,6 +20,7 @@ include(CTest)
 include(Catch)
 
 find_package(Minuit2 REQUIRED)
+find_package(Boost 1.82 REQUIRED COMPONENTS stacktrace_basic)
 
 add_subdirectory(src)
 
