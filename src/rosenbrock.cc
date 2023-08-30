@@ -69,7 +69,8 @@ namespace pfc {
   operator<<(std::ostream& os, TracedRosenbrockWrapper const& w)
   {
     for (auto it = w.stacks_.cbegin(); it != w.stacks_.cend(); ++it) {
-      os << it->first << " observed " << it->second << " times\n";
+      os << it->first; // write out the stack
+      os << "###ncalls " << it->second << '\n';
     }
     return os;
   }

@@ -1,2 +1,9 @@
 release-build/
 debug-build/
+.RData
+.Rhistory
+.idea/
+*.pdf
+*.feather
+*.tsv
+*.dot

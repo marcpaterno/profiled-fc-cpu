@@ -12,6 +12,6 @@ main()
   ROOT::Minuit2::MnMigrad minimizer(fcn, {-1.2, 1.0}, {1.e-3, 1.e-3});
 
   ROOT::Minuit2::FunctionMinimum result = minimizer(1000, 1.e-6);
-  std::cout << fcn;
+  std::cout << fcn << '\n';
   return result.IsValid() ? 0 : 1;
 }
