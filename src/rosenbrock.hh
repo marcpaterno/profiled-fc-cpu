@@ -1,7 +1,7 @@
 #ifndef PROFILED_FC_CPU_ROSENBROCK_HH
 #define PROFILED_FC_CPU_ROSENBROCK_HH
 
-#include <iostream>
+#include <ostream>
 #include <string>
 #include <unordered_map>
 #include <vector>

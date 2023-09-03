@@ -33,3 +33,23 @@ If you are using CMake, only out-of-source builds are supported.
     
 To build the software, run `ninja` in the build directory.
 To run the tests, run `ctest` in the build directory.
+
+## The example programs
+
+### minuit2_example
+
+This program demonstrates the way the Minuit2 minimizer works on the Rosenbrock function in two dimensions.
+It uses increasingly strict tolerance for the minimizations and prints out a table showing how the minimizer behaves with the varying tolerance.
+It uses the same starting point each time, because the starting point is not especially critical for this function.
+
+###  minuit2_rastrigin_example
+
+This program demonstrates the way the Minuit2 minimizer works on the Rastringin function in three dimensions.
+This is a function with a large number of local minima, but a single global minimum.
+Because the result is very sensitive to the starting location of the search, the user must specify the starting point.
+
+### stacktrace_example
+
+This program creates a stack trace showing the function call chains made by the Minuit2 minimizer.
+It uses the Rosenbrock function, on which Minuit2 fares well.
+
