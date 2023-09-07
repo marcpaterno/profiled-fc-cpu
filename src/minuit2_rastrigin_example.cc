@@ -53,7 +53,7 @@ main(int argc, char* argv[])
 
   bool keep_going = true;
   bool first_loop = true;
-  while (toler > minimum_tolerance) {
+  while (toler > minimum_tolerance && keep_going) {
     keep_going = do_loop(fcn, starting_point, first_loop, toler);
     toler /= 2;
     first_loop = false;

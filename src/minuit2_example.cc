@@ -73,7 +73,7 @@ main()
   bool keep_going =
     true; // will be set to false when the minimization does not converge
   bool first_loop = true;
-  while (toler > minimum_tolerance) {
+  while (toler > minimum_tolerance && keep_going) {
     keep_going = do_loop(fcn, first_loop, toler);
     // prepare for next loop
     toler /= 2;
