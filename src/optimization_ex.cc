@@ -14,7 +14,7 @@
 // than zero means the dimension has fixed size. Choosing a fixed-size value
 // may allow for more efficient code generation (e.g., allowing loop unrolling).
 
-using column_vector = dlib::matrix<double, 0, 1>;
+using column_vector = dlib::matrix<double, 2, 1>;
 
 using namespace dlib;
 using namespace std;
