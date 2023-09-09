@@ -12,6 +12,7 @@ dependencies:
   - minuit2
   - mypy
   - ninja
+  - openblas
   - openssl
   - pydot
   - pylint
