@@ -58,12 +58,12 @@ main()
   // arguments of type double! Unfortunately, it is not clever enough to
   // give a compilation failure if the specification of the lower bounds and
   // the upper bounds have the wrong number of values.
-  dlib::function_evaluation result =
-    dlib::find_min_global(pfc::rosenbrock,
-                          {-10, -10},                    // lower bounds
-                          {10, 10},                      // upper bounds
-                          std::chrono::milliseconds(500) // run this long
-    );
+  dlib::function_evaluation result = dlib::find_min_global(
+    pfc::rosenbrock,
+    {-10, -10},                    // lower bounds
+    {10, 10},                      // upper bounds
+    dlib::max_function_calls(1000) // max function evaluations
+  );
 
   std::cout << "\nusing find_min_global:\n"
             << result.x << "minimum value is: " << result.y << '\n';
