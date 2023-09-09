@@ -5,6 +5,9 @@ target_link_libraries(profiled_fc_cpu PRIVATE Minuit2::Minuit2)
 add_executable(optimization_ex optimization_ex.cc)
 target_link_libraries(optimization_ex PRIVATE dlib::dlib profiled_fc_cpu)
 
+add_executable(dlib_rastrigin_example dlib_rastrigin_example.cc)
+target_link_libraries(dlib_rastrigin_example PRIVATE dlib::dlib profiled_fc_cpu)
+
 add_executable(rosenbrock_test rosenbrock.test.cc)
 target_include_directories(rosenbrock_test PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(rosenbrock_test PRIVATE Catch2::Catch2WithMain profiled_fc_cpu Minuit2::Minuit2)

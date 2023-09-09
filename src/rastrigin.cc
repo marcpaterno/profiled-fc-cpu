@@ -1,3 +1,4 @@
+#include "rastrigin_minuit_wrapper.hh"
 #include "rastrigin.hh"
 #include "math.h" // C++20 has <numbers>, and std::numbers::pi
 

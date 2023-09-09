@@ -5,6 +5,7 @@
 
 #include "minuit2_support.hh"
 #include "rastrigin.hh"
+#include "rastrigin_minuit_wrapper.hh"
 
 #include <iostream>
 #include <string>
