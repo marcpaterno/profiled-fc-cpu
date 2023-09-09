@@ -1,6 +1,7 @@
 #define _GNU_SOURCE
 #include "rosenbrock.hh"
 #include "boost/stacktrace.hpp"
+#include "rosenbrock_minuit_wrapper.hh"
 
 #include <iostream>
 #include <ostream>

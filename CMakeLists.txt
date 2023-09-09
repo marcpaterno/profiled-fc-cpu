@@ -14,7 +14,15 @@ FetchContent_Declare(
   GIT_TAG        v3.4.0 # or a later release
   GIT_SHALLOW TRUE)
 
+FetchContent_Declare(
+  dlib
+  GIT_REPOSITORY https://github.com/marcpaterno/dlib.git
+  GIT_TAG 22f66ecba6fff616bc501bbfcd73334ad55f8fc3
+  GIT_SHALLOW TRUE)
+
 FetchContent_MakeAvailable(catch)
+FetchContent_MakeAvailable(dlib)
+
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 include(CTest)
 include(Catch)

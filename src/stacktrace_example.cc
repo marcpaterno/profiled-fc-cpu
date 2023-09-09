@@ -1,6 +1,6 @@
 #include "Minuit2/FunctionMinimum.h"
 #include "Minuit2/MnMigrad.h"
-#include "rosenbrock.hh"
+#include "rosenbrock_minuit_wrapper.hh"
 
 #include <iostream>
 

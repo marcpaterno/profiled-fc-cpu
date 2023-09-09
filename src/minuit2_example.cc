@@ -4,7 +4,7 @@
 #include "Minuit2/MnUserParameters.h"
 
 #include "minuit2_support.hh"
-#include "rosenbrock.hh"
+#include "rosenbrock_minuit_wrapper.hh"
 
 #include <iostream>
 
