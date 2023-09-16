@@ -1,2 +1,10 @@
 *_files/
 *.html
+*_cache/
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.qmd.bak
+*.tex
+rsconnect/

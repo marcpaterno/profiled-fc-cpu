@@ -29,7 +29,7 @@ make_bounds(int dim)
   // optimizer take advantage of the symmetry of the rastrigin function.
   bounds result(dim);
   for (int i = 0; i < dim; ++i) {
-    result.lower(i) = -19.0 + i;
+    result.lower(i) = -4.0 + i;
     result.upper(i) = 1.0 + i;
   }
   return result;

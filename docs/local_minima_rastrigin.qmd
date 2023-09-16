@@ -1,0 +1,339 @@
+---
+title: "Dealing with Multiple Local Minima: the Rastrigin Test Function"
+author: "Marc Paterno"
+format:
+  html:
+    mainfont: Georgia
+execute:
+  echo: false
+  warning: false
+editor_options:
+  markdown:
+    wrap: sentence
+---
+
+```{r setup, include=FALSE}
+library(ggplot2)
+library(lucid)
+source("functions.R")
+```
+
+```{r}
+# Uncomment the following only for a final pass it makes the PDF generation
+# quite slow. However, the typesetting output is superior.
+#
+# if(knitr::is_latex_output()) {knitr::opts_chunk$set(dev = 'tikz')}
+```
+
+## The problem
+
+The "likelihood function" we will eventually get from DUNE is very likely to be one that has multiple local minima, at least in some of the variables.
+This certainly was the case for the NOvA likelihood function.
+So it is important for us to look at how well currently available algorithms are able to find the global minimum in a function with multiple local minima.
+
+## The Rastrigin function
+
+One useful test function to evaluate how well an algorithm deals with multiple local minima is the Rastrigin function.
+This function is the sum of a series of terms, each of which is itself the sum of a parabola and negated cosine wave.
+The function's definition is:
+$$f(\vec{x}) = 10 n + \sum_{i=1}^{n} ({x_i}^2 - 10 \cos(2 \pi x_i))$$
+where $\vec{x}$ is the set of values $(x_1, \ldots , x_n)$.
+The parabola term creates a global minimum at the origin.
+The cosine term produces local minima at all "half wavelenths", i.e., whenever the value of a coordinate is integral.
+@fig-rastrigin-curve shows what the Rastrigin function in one dimenion looks like.
+
+```{r}
+#| fig-cap: The Rastrigin function in one dimension.
+#| label: fig-rastrigin-curve
+rastrigin <- function(x) {10 + x*x - 10 * cos(2*pi*x)}
+ggplot() + xlim(-3, 3) + geom_function(fun=rastrigin, n = 501)
+```
+
+## Setup for the experiments
+
+For each of the experiments, we select a dimensionality for the problem.
+In each experiment, we vary the maximum number of objective function calls we allow the minimizer to use.
+We are not setting any tolerance parameter for the algorithm.
+We are interested in looking at the quality of the minimum found, as a function of the allowed number of function calls.
+We also want to record the location of the minimum that was found, and the amount of time it took the algorithm to complete.
+
+The Rastrigin function is symmetric about zero in every dimension.
+The objective function we will be using for DUNE (or any other experiment) will not generally have any such symmetr.
+In order for this symmetry to not give an undue advantage to the search for the function minimum, we select the region so that in each dimension the global minimum is not centered.
+Furthermore, we make sure it is differently off-center in each dimension.
+
+We found that having large search region makes this problem very hard, and so after a first set of experiments using a search region that is 20 units wide in each coordinate, we switched to using 5 units wide in each coordinate.
+
+In each experiment, we start with a `maxcalls` value of 1.
+We try the minimizer with this value of `maxcalls`, and print out the results.
+We stop when either of the following conditions holds:
+
+#. The result is less than $10^{-6}$ (the correct answer is exactly 0).
+   In this case, we consider the algorithm to have converged.
+#. It is taking too long, and we give up.
+   In this case we consider the algorithm *not* to have converged.
+
+## Solving in 2 dimensions
+
+In 2 dimensions, the `dlib::find_min_global` function is able to find the global minimum in an tolerable amount of time.
+The raw data are shown in @tbl-rast-2d.
+
+```{r}
+#| label: tbl-rast-2d
+#| tbl-cap: Minimization of the Rastrigin function in two dimensions.
+x2 <- data.table::fread("dlib-rastrigin-2.txt") |>
+  dplyr::mutate(time = as.double(time)/1.e6) # we are converting from microseconds to seconds
+knitr::kable(x2)
+```
+
+@fig-convergence-2d shows how the value of the minimum found improves with an increasing number of function calls allowed.
+Note how the algorithm seems to have performance plateaus, where varying the number of function calls allowed does not make any difference -- until a new plateau is reached.
+Eventually, the algorithm is able to find the global minimum.
+
+```{r}
+#| label: fig-convergence-2d
+#| fig-cap: Result of minimization in 2D as a function of the maximum number of function calls allowed. Note that the y-location of the final point is our means of showing y=0 on a plot with a logarithmic y-axis.
+ggplot(x2, aes(maxcalls, fmin)) +
+  geom_point() +
+  scale_x_log10_nice() +
+  scale_y_log10_nice() +
+  labs(x="maximum allowed function calls", y="best minimum")
+```
+
+```{r}
+#| label: fig-time-2d
+#| fig-cap: Execution time as a function of the maximum number of function calls allowed.
+ggplot(x2, aes(maxcalls, time)) +
+  geom_point() +
+  scale_y_log10_nice() +
+  scale_x_log10_nice() +
+  labs(x="maximum allowed function calls", y="execution time (s)")
+```
+
+```{r}
+min_n_fit <- 1000
+xx <- dplyr::filter(x2, maxcalls > min_n_fit) |>
+  dplyr::mutate(t = log10(time), n = log10(maxcalls), .keep = "none")
+model <- lm(xx$t ~  xx$n)
+```
+
+@fig-time-2d shows how the time taken to run the algorithm increases with the value of `maxcalls`.
+For the larger values of `maxcalls`, the relationship seems to be an approximate power law.
+Fitting the data for `maxcalls` > `r lucid(min_n_fit)` gives an exponent of `r lucid(coefficients(model)[2])`.
+It appears from these data that the algorithm is $\mathcal{O}(n^2)$ in two dimensions.
+Only a careful analysis of the algorithm would let us be sure.
+
+## Solving in 3 dimensions
+
+We repeat the analysis for the function in 3 dimensions.
+In 3 dimensions, the `dlib::find_min_global` function is unable to find the global minimum in an acceptable amount of time.
+The raw data are shown in @tbl-rast-3d.
+
+```{r}
+#| label: tbl-rast-3d
+#| tbl-cap: Minimization of the Rastrigin function in three dimensions.
+x3 <- data.table::fread("dlib-rastrigin-3.txt") |>
+  dplyr::mutate(time = as.double(time)/1.e6) # we are converting from microseconds to seconds
+knitr::kable(x3)
+```
+
+@fig-convergence-3d plots the rate of convergence.
+It shows some of same plateau structure as did the 2D case.
+
+```{r}
+#| label: fig-convergence-3d
+#| fig-cap: Result of minimization in 3D as a function of the maximum number of function calls allowed.
+ggplot(x3, aes(maxcalls, fmin)) +
+  geom_point() +
+  scale_x_log10_nice() +
+  scale_y_log10_nice() +
+  labs(x="maximum allowed function calls", y="best minimum")
+```
+
+```{r}
+min_n_fit <- 1000
+xx <- dplyr::filter(x3, maxcalls > min_n_fit) |>
+  dplyr::mutate(t = log10(time), n = log10(maxcalls), .keep = "none")
+model <- lm(xx$t ~  xx$n)
+max_time <- max(x3$time)
+```
+
+@fig-time-3d shows the time taken to execute the algorithm.
+Fitting the data for `maxcalls` > `r lucid(min_n_fit)` gives an exponent of `r lucid(coefficients(model)[2])`.
+These data are consistent with the algorithm being $\mathcal{O}(n^2)$ in three dimensions.
+So, while the algorithm did not converge, at least it does not appear that the complexity of the algorithm is dependent on the dimenstionality of the search space.
+Note that the algorithm ran for `r lucid(max_time/60)` minutes without converging.
+
+```{r}
+#| label: fig-time-3d
+#| fig-cap: Execution time as a function of the maximum number of function calls allowed.
+ggplot(x3, aes(maxcalls, time)) +
+  geom_point() +
+  scale_y_log10_nice() +
+  scale_x_log10_nice() +
+  labs(x="maximum allowed function calls", y="execution time (s)")
+```
+
+## Solving in 5 dimensions
+
+As we should expect, in 5 dimensions the `dlib::find_min_global` function is not able to find the global minimum even if allowed to work for hours.
+@fig-convergence-5d shows the rate of rate of convergence.
+
+```{r}
+#| label: fig-convergence-5d
+#| fig-cap: Result of minimization in 5D as a function of the maximum number of function calls allowed.
+x5 <- data.table::fread("dlib-rastrigin-5.txt") |>
+  dplyr::mutate(time = as.double(time)/1.e6)
+ggplot(x5, aes(maxcalls, fmin)) +
+  geom_point() +
+  scale_x_log10_nice() +
+  ylim(0, NA) +
+  labs(x="maximum allowed function calls", y="best minimum")
+```
+
+```{r}
+min_n_fit <- 1000
+xx <- dplyr::filter(x5, maxcalls > min_n_fit) |>
+  dplyr::mutate(t = log10(time), n = log10(maxcalls), .keep = "none")
+model <- lm(xx$t ~  xx$n)
+```
+
+@fig-time-5d shows the time taken for the algorithm to run.
+After 256 function calls, which takes about `r lucid(x5[9,]$time)` seconds, the algorithm is unable to improve its solution.
+This is even after setting the maximum allowed number of function calls to `r x5[19,]$maxcalls`, which took `r lucid( x5[19,]$time/3600)` hours.
+
+```{r}
+#| label: fig-time-5d
+#| fig-cap: Execution time as a function of the maximum number of function calls allowed.
+ggplot(x5, aes(maxcalls, time)) +
+  geom_point() +
+  scale_y_log10_nice() +
+  scale_x_log10_nice() +
+  labs(x="maximum allowed function calls", y="execution time (s)")
+```
+
+Fitting the data for `maxcalls` > `r lucid(min_n_fit)` gives an exponent of `r lucid(coefficients(model)[2])`.
+Perhaps the algorithm is not $\mathcal{O}(n^2)$, but slightly worse, e.g. $\mathcal{O}(n^2 \log(n))$?
+Only inspecting the code (or documentation) will tell us for sure.
+
+## Using a smaller search area
+
+In the fits above, the search area contained $20^n$ local minima, where $n$ is the dimensionality of the search.
+This is apparently too hard for the algorithm to solve in an acceptable amount of time.
+
+Next we restricted the search to a smaller region, with only $5^n$ minima.
+
+## Search in 2 dimensions
+
+In the smaller region, the algorithm find the minimum even more quickly than it did in the larger search space.
+@fig-convergence-2ds shows the rate of convergence, and @fig-time-2ds shows the time taken to run the algorithm.
+
+```{r}
+#| label: fig-convergence-2ds
+#| fig-cap: Result of minimization in 2D as a function of the maximum number of function calls allowed.
+x2s <- data.table::fread("dlib-rastrigin-small-2.txt") |>
+  dplyr::mutate(time = as.double(time)/1.e6)
+ggplot(x2s, aes(maxcalls, fmin)) +
+  geom_point() +
+  scale_x_log10_nice() +
+  scale_y_log10_nice() +
+  #  ylim(0, NA) +
+  labs(x="maximum allowed function calls", y="best minimum")
+```
+
+```{r}
+min_n_fit <- 500
+xx <- dplyr::filter(x2s, maxcalls > min_n_fit) |>
+  dplyr::mutate(t = log10(time), n = log10(maxcalls), .keep = "none")
+model <- lm(xx$t ~  xx$n)
+```
+
+```{r}
+#| label: fig-time-2ds
+#| fig-cap: Execution time as a function of the maximum number of function calls allowed.
+ggplot(x2s, aes(maxcalls, time)) +
+  geom_point() +
+  scale_y_log10_nice() +
+  scale_x_log10_nice() +
+  labs(x="maximum allowed function calls", y="execution time (s)")
+```
+
+Fitting the data for `maxcalls` > `r lucid(min_n_fit)` gives an exponent of `r lucid(coefficients(model)[2])`.
+
+## Search in 3 dimensions
+```{r}
+x3s <- data.table::fread("dlib-rastrigin-small-3.txt") |>
+  dplyr::mutate(time = as.double(time)/1.e6)
+```
+
+In the smaller region, the algorithm is able to converge -- but it takes `r lucid(max(x3s$time/60))` minutes, even though we're only working in 3 dimensions.
+@fig-convergence-3ds shows the rate of convergence and @fig-time-3ds shows the time taken for the algorithm to run.
+
+```{r}
+#| label: fig-convergence-3ds
+#| fig-cap: Result of minimization in 3D as a function of the maximum number of function calls allowed.
+ggplot(x3s, aes(maxcalls, fmin)) +
+  geom_point() +
+  scale_x_log10_nice() +
+  ylim(0, NA) +
+  labs(x="maximum allowed function calls", y="best minimum")
+```
+
+```{r}
+min_n_fit <- 1000
+xx <- dplyr::filter(x3s, maxcalls > min_n_fit) |>
+  dplyr::mutate(t = log10(time), n = log10(maxcalls), .keep = "none")
+model <- lm(xx$t ~  xx$n)
+```
+
+```{r}
+#| label: fig-time-3ds
+#| fig-cap: Execution time as a function of the maximum number of function calls allowed.
+ggplot(x3s, aes(maxcalls, time)) +
+  geom_point() +
+  scale_y_log10_nice() +
+  scale_x_log10_nice() +
+  labs(x="maximum allowed function calls", y="execution time (s)")
+```
+
+Fitting the data for `maxcalls` > `r lucid(min_n_fit)` gives an exponent of `r lucid(coefficients(model)[2])`.
+
+## Search in 4 dimensions
+
+```{r}
+x4s <- data.table::fread("dlib-rastrigin-small-4.txt") |>
+  dplyr::mutate(time = as.double(time)/1.e6)
+max_time <- max(x4s$time)
+```
+
+Even in the smaller region, the algorithm is unable to converge within an acceptable time: the algorithm ran for `r lucid(max_time/3600)` hours without converging.
+@fig-convergence-4ds shows the rate of convergence and @fig-time-4ds shows the time it took the algorithm to run.
+
+```{r}
+#| label: fig-convergence-4ds
+#| fig-cap: Result of minimization in 4D as a function of the maximum number of function calls allowed.
+ggplot(x4s, aes(maxcalls, fmin)) +
+  geom_point() +
+  scale_x_log10_nice() +
+  ylim(0, NA) +
+  labs(x="maximum allowed function calls", y="best minimum")
+```
+
+```{r}
+min_n_fit <- 5000
+xx <- dplyr::filter(x4s, maxcalls > min_n_fit) |>
+  dplyr::mutate(t = log10(time), n = log10(maxcalls), .keep = "none")
+model <- lm(xx$t ~  xx$n)
+```
+
+```{r}
+#| label: fig-time-4ds
+#| fig-cap: Execution time as a function of the maximum number of function calls allowed.
+ggplot(x4s, aes(maxcalls, time)) +
+  geom_point() +
+  scale_y_log10_nice() +
+  scale_x_log10_nice() +
+  labs(x="maximum allowed function calls", y="execution time (s)")
+```
+
+Fitting the data for `maxcalls` > `r lucid(min_n_fit)` gives an exponent of `r lucid(coefficients(model)[2])`.
