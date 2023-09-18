@@ -1,4 +1,7 @@
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
+#endif
+
 #include "rosenbrock.hh"
 #include "boost/stacktrace.hpp"
 #include "rosenbrock_minuit_wrapper.hh"

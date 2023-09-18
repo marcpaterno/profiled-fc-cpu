@@ -35,12 +35,12 @@ If you are using CMake, only out-of-source builds are supported.
     # create the build system, in a release build using the clang++ and clang
     # compilers found on $PATH. This is appropriate when, e.g., you are using
     # the Conda environment to obtain some of the pre-built dependencies.
-    cmake -G Ninja -DCMAKE_CXX_COMPILER=$(which clang++) -DCMAKE_C_COMPILER=$(which clang) -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=on -DDLIB_JPEG_SUPPORT=off -DDLIB_LINK_WITH_SQLITE3=off -DDLIB_USE_CUDA=off -DDLIB_PNG_SUPPORT=off -DDLIB_GIF_SUPPORT=off -DDLIB_WEBP_SUPPORT=off -DDLIB_USE_MKL_FFT=off -DDLIB_USE_FFMPEG=off  ..
+    cmake -G Ninja -DCMAKE_CXX_COMPILER=$(which clang++) -DCMAKE_C_COMPILER=$(which clang) -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=on -DDLIB_JPEG_SUPPORT=off -DDLIB_LINK_WITH_SQLITE3=off -DDLIB_USE_CUDA=off -DDLIB_PNG_SUPPORT=off -DDLIB_GIF_SUPPORT=off -DDLIB_WEBP_SUPPORT=off -DDLIB_USE_MKL_FFT=off -DDLIB_USE_FFMPEG=off -DDLIB_NO_GUI_SUPPORT=on  ..
 
     # Alternative: create the build system using the system compiler, and
     # system installations of the pre-compiled dependencies. For macOS, the
     # system installations include recipes installed by homebrew.
-    cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=on -DDLIB_JPEG_SUPPORT=off -DDLIB_LINK_WITH_SQLITE3=off -DDLIB_USE_CUDA=off -DDLIB_PNG_SUPPORT=off -DDLIB_GIF_SUPPORT=off -DDLIB_WEBP_SUPPORT=off -DDLIB_USE_MKL_FFT=off -DDLIB_USE_FFMPEG=off  ..
+    cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=on -DDLIB_JPEG_SUPPORT=off -DDLIB_LINK_WITH_SQLITE3=off -DDLIB_USE_CUDA=off -DDLIB_PNG_SUPPORT=off -DDLIB_GIF_SUPPORT=off -DDLIB_WEBP_SUPPORT=off -DDLIB_USE_MKL_FFT=off -DDLIB_USE_FFMPEG=off -DDLIB_NO_GUI_SUPPORT=on ..
     
 To build the software, run `ninja` in the build directory.
 To run the tests, run `ctest` in the build directory.
