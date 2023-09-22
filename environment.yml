@@ -9,6 +9,7 @@ dependencies:
   - cmake >= 3.26
   - cxx-compiler
   - flake8
+  - mkl
   - minuit2
   - mypy
   - ninja

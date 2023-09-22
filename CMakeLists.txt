@@ -29,6 +29,7 @@ include(Catch)
 
 find_package(Minuit2 REQUIRED)
 find_package(Boost 1.82 REQUIRED COMPONENTS stacktrace_basic)
+find_package(TBB 2021.10.0 REQUIRED)
 
 add_subdirectory(src)
 
