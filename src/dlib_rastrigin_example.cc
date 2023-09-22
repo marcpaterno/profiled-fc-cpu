@@ -1,8 +1,22 @@
+#include "geometry.hh"
 #include "rastrigin.hh"
 
 #include "dlib/global_optimization.h"
 
 #include <iostream>
+
+pfc::bounds
+pfc::make_bounds(int dim)
+{
+  // We intentionally make the bounds non-symmetric, to avoid having the
+  // optimizer take advantage of the symmetry of the rastrigin function.
+  bounds result(dim);
+  for (int i = 0; i < dim; ++i) {
+    result.lower(i) = -4.0 + i;
+    result.upper(i) = 1.0 + i;
+  }
+  return result;
+}
 
 // We have written the rastrigin function to be callable with a vector of
 // arbitrary length, so we use the dynamic-sized version of column vector.

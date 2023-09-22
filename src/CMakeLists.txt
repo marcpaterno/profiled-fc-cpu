@@ -1,6 +1,6 @@
-add_library(profiled_fc_cpu minuit2_support.cc rosenbrock.cc rastrigin.cc)
+add_library(profiled_fc_cpu minuit2_support.cc rosenbrock.cc rastrigin.cc geometry.cc)
 target_include_directories(profiled_fc_cpu PUBLIC ${PROJECT_SOURCE_DIR}/src)
-target_link_libraries(profiled_fc_cpu PRIVATE Minuit2::Minuit2 ${CMAKE_DL_LIBS})
+target_link_libraries(profiled_fc_cpu PUBLIC dlib::dlib PRIVATE Minuit2::Minuit2 ${CMAKE_DL_LIBS})
 
 add_executable(optimization_ex optimization_ex.cc)
 target_link_libraries(optimization_ex PRIVATE dlib::dlib profiled_fc_cpu)
@@ -32,3 +32,8 @@ add_executable(rastrigin_test rastrigin.test.cc)
 target_include_directories(rastrigin_test PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(rastrigin_test PRIVATE Catch2::Catch2WithMain profiled_fc_cpu Minuit2::Minuit2)
 add_test(rastrigin_test rastrigin_test)
+
+add_executable(geometry_test geometry.test.cc)
+target_include_directories(geometry_test PUBLIC ${PROJECT_SOURCE_DIR}/src)
+target_link_libraries(geometry_test PRIVATE Catch2::Catch2WithMain profiled_fc_cpu)
+add_test(geometry_test geometry_test)
