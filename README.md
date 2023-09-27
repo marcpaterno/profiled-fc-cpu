@@ -41,6 +41,10 @@ If you are using CMake, only out-of-source builds are supported.
     # system installations of the pre-compiled dependencies. For macOS, the
     # system installations include recipes installed by homebrew.
     cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=on -DDLIB_JPEG_SUPPORT=off -DDLIB_LINK_WITH_SQLITE3=off -DDLIB_USE_CUDA=off -DDLIB_PNG_SUPPORT=off -DDLIB_GIF_SUPPORT=off -DDLIB_WEBP_SUPPORT=off -DDLIB_USE_MKL_FFT=off -DDLIB_USE_FFMPEG=off -DDLIB_NO_GUI_SUPPORT=on ..
+
+    # Another alternative: generate an Xcode project.
+    cmake -G Xcode -DBUILD_SHARED_LIBS=on -DDLIB_JPEG_SUPPORT=off -DDLIB_LINK_WITH_SQLITE3=off -DDLIB_USE_CUDA=off -DDLIB_PNG_SUPPORT=off -DDLIB_GIF_SUPPORT=off -DDLIB_WEBP_SUPPORT=off -DDLIB_USE_MKL_FFT=off -DDLIB_USE_FFMPEG=off -DDLIB_NO_GUI_SUPPORT=on  ..
+
     
 To build the software, run `ninja` in the build directory.
 To run the tests, run `ctest` in the build directory.
