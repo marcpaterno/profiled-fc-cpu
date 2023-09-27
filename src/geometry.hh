@@ -4,12 +4,19 @@
 #include "dlib/matrix.h"
 #include <iosfwd>
 #include <utility>
+#include <vector>
 
 namespace pfc {
 
   // We have written the rastrigin function to be callable with a vector of
   // arbitrary length, so we use the dynamic-sized version of column vector.
   using column_vector = dlib::matrix<double, 0, 1>;
+
+  // Forward-declare region, which is defined below.
+  class region;
+
+  std::vector<region> make_splits(int ngenerations,
+                                  std::vector<region> const& regions);
 
   std::ostream& operator<<(std::ostream& os, column_vector const& cv);
 
@@ -62,6 +69,8 @@ namespace pfc {
 
     double& lower(std::size_t i);
     double& upper(std::size_t i);
+
+    double volume() const;
 
   private:
     // Lower and upper must be of the same length.

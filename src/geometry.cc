@@ -76,6 +76,16 @@ pfc::region::width(std::size_t i) const
   return upper_(i) - lower_(i);
 }
 
+double
+pfc::region::volume() const
+{
+  double vol = width(0);
+  for (std::size_t i = 1; i != ndims(); ++i) {
+    vol *= width(i);
+  }
+  return vol;
+}
+
 // Implementation of free functions
 namespace pfc {
   std::ostream&
@@ -103,5 +113,22 @@ namespace pfc {
   {
     os << '(' << r.lower_ << ") (" << r.upper_ << ')';
     return os;
+  }
+
+  std::vector<region>
+  make_splits(int ngenerations, std::vector<region> const& regions)
+  {
+    assert(ngenerations >= 0);
+    if (ngenerations == 0)
+      return regions;
+
+    std::vector<region> new_generation;
+    new_generation.reserve(2 * regions.size());
+    for (auto const& r : regions) {
+      auto [a, b] = r.split();
+      new_generation.push_back(a);
+      new_generation.push_back(b);
+    }
+    return make_splits(ngenerations - 1, new_generation);
   }
 }

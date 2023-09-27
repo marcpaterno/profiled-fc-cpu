@@ -56,4 +56,11 @@ do_one_minimization(column_vector const& lower_bounds,
 
 int
 main()
-{}
+{
+  // Set up full region for test.
+  region full_region({-19.0, -18.0, -17.0}, {1.0, 2.0, 3.0});
+  // Do 7 levels of splitting to each "set" of regions; this generates 2**7 =
+  // 128 regions.
+  std::vector<region> regions =
+    make_splits(7, std::vector<region>{full_region});
+}

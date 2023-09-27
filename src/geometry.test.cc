@@ -76,3 +76,18 @@ TEST_CASE("square splitting")
   CHECK(b.lower(1) == 0.0);
   CHECK(b.upper(1) == 4.0);
 }
+
+TEST_CASE("splitting generations")
+{
+  region three_d({0.0, 0.0, 0.0}, {128.0, 256.0, 512.0});
+  std::vector<region> original{three_d};
+  std::vector<region> result = make_splits(7, original);
+  CHECK(result.size() == 128);
+  double const expected_volume = three_d.volume()/128;
+  for (auto const& r : result)
+  {
+    CHECK(r.volume() == expected_volume);
+  }
+
+
+}
