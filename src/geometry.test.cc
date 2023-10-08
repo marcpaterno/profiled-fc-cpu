@@ -1,6 +1,8 @@
 #include "geometry.hh"
 #include "catch2/catch_test_macros.hpp"
 
+#include <random>
+
 using pfc::column_vector;
 using pfc::region;
 
@@ -83,11 +85,19 @@ TEST_CASE("splitting generations")
   std::vector<region> original{three_d};
   std::vector<region> result = make_splits(7, original);
   CHECK(result.size() == 128);
-  double const expected_volume = three_d.volume()/128;
-  for (auto const& r : result)
-  {
+  double const expected_volume = three_d.volume() / 128;
+  for (auto const& r : result) {
     CHECK(r.volume() == expected_volume);
   }
+}
 
-
+TEST_CASE("random locations")
+{
+  region three_d({-10.0, -5.0, 10.0}, {0.0, 5.0, 20.0});
+  std::mt19937 engine;
+  CHECK(three_d.volume() == 1000.0);
+  for (int i = 0; i < 1; ++i) {
+    auto location = pfc::random_point_within(three_d, engine);
+    CHECK(pfc::within_region(location, three_d));
+  }
 }

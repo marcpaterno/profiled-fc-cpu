@@ -3,6 +3,8 @@
 
 #include "dlib/matrix.h"
 #include <iosfwd>
+#include <limits>
+#include <random>
 #include <utility>
 #include <vector>
 
@@ -83,6 +85,15 @@ namespace pfc {
     friend std::ostream& operator<<(std::ostream& os, region const& r);
   };
 
+  // Return true if the given point is within the region (including on its
+  // border), false otherwise.
+  bool within_region(column_vector const& point, region const& r);
+
+  // Return a random point, drawn from a uniform distribution across the whole
+  // region.
+  template <typename ENGINE>
+  column_vector random_point_within(region const& r);
+
   // Implementation details below.
 
   inline column_vector const&
@@ -125,6 +136,22 @@ namespace pfc {
   // They are here only to allow testing.
   namespace detail {
     std::size_t determine_split_dimension(pfc::region const& r);
+  }
+
+  template <typename ENGINE>
+  column_vector
+  random_point_within(region const& r, ENGINE& e)
+  {
+    column_vector result(r.ndims());
+    // We need to make sure we do not generated a random value of 0, because
+    // that would give a point on the boundary rather than inside the volume.
+    std::uniform_real_distribution flat(std::numeric_limits<double>::min(),
+                                        1.0);
+    for (std::size_t i = 0; i != r.ndims(); ++i) {
+      double const val = flat(e) * r.width(i) + r.lower(i);
+      result(i) = val;
+    }
+    return result;
   }
 
 }

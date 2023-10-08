@@ -68,3 +68,7 @@ Because the result is very sensitive to the starting location of the search, the
 This program creates a stack trace showing the function call chains made by the Minuit2 minimizer.
 It uses the Rosenbrock function, on which Minuit2 fares well.
 
+### dlib_parallel_rastrigin_example
+
+This program demonstrates the use of a simple parallelization over otherwise serial local minimization.
+This program also demonstrates the use of a task-based parallel programming model.

@@ -57,10 +57,20 @@ do_one_minimization(column_vector const& lower_bounds,
 int
 main()
 {
-  // Set up full region for test.
-  region full_region({-19.0, -18.0, -17.0}, {1.0, 2.0, 3.0});
-  // Do 7 levels of splitting to each "set" of regions; this generates 2**7 =
-  // 128 regions.
-  std::vector<region> regions =
-    make_splits(7, std::vector<region>{full_region});
+  // Create task group
+  // Create shared state for answer
+  int num_starting_points = 5;
+  for (int i = 0; i != num_starting_points; ++i) {
+    // schedule a task that:
+    //    1. starts at a new random point
+    //    2. runs the local minimizer
+    //    3. puts the result into the shared state
+    //    4. looks at the shared state to see if we're done yet
+    //    5. if we're not done yet, schedules a new task starting from a new
+    //    random point
+  }
+  // Wait for all the tasks in the group to finish.
+  // When they have we are done.
+
+  // Print out the result
 }

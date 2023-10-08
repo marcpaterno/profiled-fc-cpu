@@ -1,10 +1,27 @@
 #include "geometry.hh"
 
+#include "Random123/ReinterpretCtr.hpp"
+#include "Random123/array.h"
+#include "Random123/threefry.h"
+
 #include <ostream>
 #include <stdexcept>
 
-// Helper functions in namespace to help make it clear they should not be used
-// by client code.
+namespace pfc {
+  class Generator {
+  public:
+    explicit Generator(uint32_t id1 = 0, uint32_t id2 = 0);
+    double next_double();
+
+  private:
+    using G = r123::ReinterpretCtr<r123::Array8x32, r123::Threefry4x64>;
+    G generator;
+    G::key_type key;
+    G::ctr_type ctr{{}}; // initialize with zeros
+  };
+
+  Generator::Generator(uint32_t id1, uint32_t id2) : key{{id1, id2}} {};
+}
 
 std::size_t
 pfc::detail::determine_split_dimension(pfc::region const& r)
@@ -49,10 +66,6 @@ pfc::region::split() const
   // Find dimension we will split.
   std::size_t split_dim = detail::determine_split_dimension(*this);
   double split_location = (lower_(split_dim) + upper_(split_dim)) / 2.0;
-  std::cerr << "splitting region: " << *this << "\nsplitting on index "
-            << split_dim << "\nsplitting at location " << split_location
-            << '\n';
-
   region& a = result.first;
   region& b = result.second;
 
@@ -65,8 +78,6 @@ pfc::region::split() const
   b.lower_(split_dim) = split_location;
   b.upper_(split_dim) = upper_(split_dim);
 
-  std::cerr << "split results are:\n\t" << result.first << "\n\t"
-            << result.second << '\n';
   return result;
 }
 
@@ -131,4 +142,21 @@ namespace pfc {
     }
     return make_splits(ngenerations - 1, new_generation);
   }
+
+  bool
+  within_region(column_vector const& point, region const& r)
+  {
+    auto psize = point.size();
+    auto rsize = r.ndims();
+    if (psize != rsize)
+      throw std::logic_error("Point dimensionality does not match region.");
+    for (std::size_t i = 0; i != psize; ++i) {
+      if (point(i) < r.lower(i))
+        return false;
+      if (point(i) > r.upper(i))
+        return false;
+    }
+    return true;
+  }
+
 }
