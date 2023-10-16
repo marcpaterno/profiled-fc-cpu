@@ -96,7 +96,7 @@ TEST_CASE("random locations")
   region three_d({-10.0, -5.0, 10.0}, {0.0, 5.0, 20.0});
   std::mt19937 engine;
   CHECK(three_d.volume() == 1000.0);
-  for (int i = 0; i < 1; ++i) {
+  for (int i = 0; i < 1000; ++i) {
     auto location = pfc::random_point_within(three_d, engine);
     CHECK(pfc::within_region(location, three_d));
   }
