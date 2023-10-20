@@ -107,7 +107,7 @@ namespace pfc {
     os << cv(0);
 
     for (std::size_t i = 1; i != cv.size(); ++i) {
-      os << ", " << cv(i);
+      os << '\t' << cv(i);
     }
     return os;
   }

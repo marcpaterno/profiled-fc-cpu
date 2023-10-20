@@ -13,3 +13,4 @@ build/
 .Rproj.user
 xcode/
 external/share/
+*build
