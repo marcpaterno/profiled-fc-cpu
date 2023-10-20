@@ -15,6 +15,7 @@ namespace pfc {
   struct solution {
     column_vector start;
     column_vector location;
+    long index = -1;
     double start_value = std::numeric_limits<double>::quiet_NaN();
     double value = std::numeric_limits<double>::quiet_NaN();
   };
@@ -30,8 +31,8 @@ namespace pfc {
   inline std::ostream&
   operator<<(std::ostream& os, solution const& sol)
   {
-    os << sol.start << '\t' << sol.start_value << '\t' << sol.location << '\t'
-       << sol.value;
+    os << sol.index << '\t' << sol.start << '\t' << sol.start_value << '\t'
+       << sol.location << '\t' << sol.value;
     return os;
   }
 
@@ -49,7 +50,8 @@ namespace pfc {
     shared_result& operator=(shared_result&&) = delete;
 
     // Insert a copy of sol into the shared result.
-    void insert(solution const& sol);
+    // We take the argument by value because we want to make the copy.
+    void insert(solution sol);
 
     // Obtain a copy of the best result thus far
     solution best() const;
@@ -68,28 +70,32 @@ namespace pfc {
     std::vector<solution> to_vector();
 
   private:
-    std::mutex mutable guard_vector_;
+    std::mutex mutable guard_results_;
     std::priority_queue<solution> results_;
-    double desired_min_;
+    long num_results_;
+    double const desired_min_;
   }; // shared_result
 
   shared_result::shared_result(double desired_min) : desired_min_(desired_min)
   {}
 
   void
-  shared_result::insert(solution const& s)
+  shared_result::insert(solution s)
   {
     // Maybe we should be inspecting 's' and deciding whether we are done based
     // on it? We do not know what our real strategy for declaring that we are
     // done will be.
-    std::scoped_lock<std::mutex> lock(guard_vector_);
+    std::scoped_lock<std::mutex> lock(guard_results_);
+    num_results_ += 1;
+
+    s.index = num_results_;
     results_.push(s);
   }
 
   solution
   shared_result::best() const
   {
-    std::scoped_lock<std::mutex> lock(guard_vector_);
+    std::scoped_lock<std::mutex> lock(guard_results_);
     solution result = results_.top();
     return result;
   }
@@ -105,7 +111,7 @@ namespace pfc {
   shared_result::to_vector()
   {
     std::vector<solution> result;
-    std::scoped_lock<std::mutex> lock(guard_vector_);
+    std::scoped_lock<std::mutex> lock(guard_results_);
     while (!results_.empty()) {
       result.push_back(results_.top());
       results_.pop();
@@ -238,6 +244,7 @@ main(int argc, char** argv)
   }
 
   // Print a header for the data.
+  std::cout << "idx\t";
   for (long i = 0; i != ndim; ++i)
     std::cout << 's' << i << '\t';
   std::cout << "fs\t";
