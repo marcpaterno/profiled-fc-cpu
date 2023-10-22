@@ -19,4 +19,5 @@ dependencies:
   - pydot
   - pylint
   - tbb
+  - tbb-devel
   - toolz
