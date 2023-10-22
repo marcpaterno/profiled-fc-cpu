@@ -1,0 +1,194 @@
+---
+title: "Naive Parallel Minimization"
+subtitle: "Multiple simultaneous minimizations applied to the Rastrigin function"
+author: "Marc Paterno"
+format:
+  html:
+    mainfont: Georgia
+execute:
+  echo: false
+  warning: false
+editor_options:
+  markdown:
+    wrap: sentence
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(lucid)
+source("functions.R")
+```
+
+```{r}
+# Uncomment the following only for a final pass it makes the PDF generation
+# quite slow. However, the typesetting output is superior.
+#
+# if(knitr::is_latex_output()) {knitr::opts_chunk$set(dev = 'tikz')}
+```
+
+## Introduction
+
+Previous work has shown that the Rastrigin function is difficult for the `dlib` library's `find_min_global` function to solve.
+When searching in a volume with edge length of 20, finding the global minimum in even 3 dimensions is not computationally feasible.
+
+In this analysis, we consider the performance of a naive parallel algorithm which finds a *global* minimum by running a *local* minimum algorithm from different starting points.
+The local minimum algorithm is based on the BFGS search strategy.
+
+The parallel algorithm uses multiple TBB tasks, each started on a random starting point within the search region.
+Each task finds a local minimum.
+It then records that minimum in a shared set of solutions.
+It then queries the shared set of solutions to determine whether the global minimum has yet been found.
+If the global minimum has not been found, the task finishes by scheduling another task that starts a new search from a random location.
+If the global minimum has been found, no new work is scheduled.
+
+The program finishes when all the tasks finish (and thus soon after a task find the global minimum).
+
+In our "testing" version of the algorithm, the shared store of all search results is of unbounded size.
+This allows us, at the end of the work, to analyze all the candidate solutions that were found.
+
+## Analysis
+
+The algorithm is of non-deterministic behavior for two reasons:
+
+1. it uses pseudorandom number generation to generate the "random" starting points, and
+2. the order of execution of threads, and thus tasks, is not deterministic.
+
+This naive algorithm can solve the problem that the `dlib::find_min_global` algorithm could not solve very quickly.
+
+### 2 dimensions
+
+```{r}
+x2 <- read_data("2") |>
+  mutate(d = tstop - tstart)
+```
+
+The two-dimensional problem seems very easy for the algorithm.
+One run resulted in the execution of `r nrow(x2)` local minimizations.
+The wall-clock execution time was bout 0.68 seconds.
+
+In two dimensions we can visualize the minimizations by plotting the starting point and ending point for each local minimization.
+In the plot below, the red points are the starting points and the black points are the ending points for each minimization.
+
+```{r}
+ggplot(x2, aes(x0, x1)) +
+  geom_point() +
+  geom_point(aes(x=s0, y=s1), color="red") +
+  geom_segment(aes(x=s0, y=s1, xend=x0, yend=x1), color="red", arrow=arrow(length=unit(0.01, "npc"))) +
+  labs(x="x0", y="x1")
+```
+
+In this space, there are 441 distinct minima, of which 1 is the global minimum.
+Few of these minima were found, and very few found more than once.
+Short "distances" between starting and stopping points are most common, but some long paths do happen.
+The distribution of distances is shown in the figure below.
+
+```{r}
+ggplot(x2, aes(dist)) +
+  geom_histogram(bins=20) +
+  labs(x="distance between start and stop locations")
+```
+
+The relationship between the distance traveled and the time taken for the minimization can be seen in a scatter plot:
+
+```{r}
+ggplot(x2, aes(dist, d)) +
+  geom_point(alpha=0.5) +
+  scale_x_log10() +
+  scale_y_log10() +
+  labs(x="distance between start and stop locations", "minimization time (ms)")
+```
+
+Is seems there is only a small tendency for minimizations that "travel further" to take a longer time to complete.
+
+### 5 dimensions
+
+```{r}
+x5 <- read_data("5") |>
+    mutate(d = tstop - tstart)
+
+```
+
+One run in 5 dimensions resulted in the execution of `r nrow(x5)` local minimizations.
+The successful start was number `r x5[1,1]` (in order of finishing).
+The wall-clock execution time (run on my laptop) was about 0.85 seconds.
+
+The running time of the local minimization that yielded the global minimum was `r lucid(x5[1,]$d)` milliseconds.
+The distribution of running times for all local minimizations is shown below.
+Note the log $x$ scale.
+
+```{r}
+ggplot(x5, aes(d)) +
+  geom_histogram(bins=30) +
+  scale_x_log10() +
+  labs(x="Running time (ms)")
+```
+
+There is a clear trend to have a high-side tail.
+There seems to be a weak correlation between the distance between the starting and ending point of the local minimization and the time it takes.
+This can be seen in the following scatter plot (note the log scales on both $x$ and $y$ axes).
+
+```{r}
+ggplot(x5, aes(dist, d)) +
+  geom_hex(aes(fill=stat(log(count))), bins=50) +
+  geom_density2d(color="white") +
+  scale_x_log10() + scale_y_log10() +
+  labs(x="distance between start and stop locations", y = "minimization time (ms)")
+```
+
+### 6 dimensions
+
+```{r}
+x6 <- read_data("6") |>
+    mutate(d = tstop - tstart)
+
+```
+
+One run in 6 dimensions resulted in the execution of `r nrow(x6)` local minimizations.
+The successful start was number `r x6[1,1]` (in order of finishing).
+The wall-clock execution time (run on my laptop) was about 74 seconds.
+
+The running time of the local minimization that yielded the global minimum was `r lucid(x6[1,]$d)` milliseconds.
+The distribution of running times for all local minimizations is shown below.
+Note the log $x$ scale.
+
+```{r}
+ggplot(x6, aes(d)) +
+  geom_histogram(bins=30) +
+  scale_x_log10() +
+  labs(x="Running time (ms)")
+```
+
+There is a clear trend to have a high-side tail.
+There seems to be a weak correlation between the distance between the starting and ending point of the local minimization and the time it takes.
+This can be seen in the following scatter plot (note the log scales on both $x$ and $y$ axes).
+
+```{r}
+ggplot(x6, aes(dist, d)) +
+  geom_hex(aes(fill=stat(log(count))), bins=50) +
+  geom_density2d(color="white") +
+  scale_x_log10() + scale_y_log10() +
+  labs(x="distance between start and stop locations", y = "minimization time (ms)")
+```
+
+
+### 7 dimensions
+
+```{r}
+x7 <-read_data("7") |>
+    mutate(d = tstop - tstart)
+
+```
+
+One run in 7 dimensions resulted in `r nrow(x7)` local minimizations.
+The successful start was number `r x7[1,1]`.
+The wall-clock execution time was about 1834 seconds.
+
+```{r}
+ggplot(x7, aes(d)) +
+  geom_histogram(bins=30) +
+  scale_x_log10() +
+  labs(x="Running time (ms)")
+```
+
+There is no indication that any individual minimization task takes very long.
+It is merely the number of tasks needed to blunder into the right minimum that seems to make the running time so large.

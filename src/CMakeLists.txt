@@ -19,7 +19,7 @@ add_executable(dlib_parallel_rastrigin_example
 target_include_directories(dlib_parallel_rastrigin_example
                            PRIVATE ${PROJECT_SOURCE_DIR}/external/include)
 target_link_libraries(dlib_parallel_rastrigin_example
-                      PRIVATE dlib::dlib profiled_fc_cpu TBB::tbb)
+                      PRIVATE dlib::dlib profiled_fc_cpu TBB::tbb fmt::fmt)
 
 add_executable(minuit2_example minuit2_example.cc)
 target_include_directories(minuit2_example PUBLIC ${PROJECT_SOURCE_DIR}/src)

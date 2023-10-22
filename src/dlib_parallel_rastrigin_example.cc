@@ -2,9 +2,11 @@
 #include "rastrigin.hh"
 
 #include "dlib/optimization.h"
+#include "fmt/format.h"
 #include "tbb/task_arena.h" // for default_concurrency()
 #include "tbb/task_group.h"
 
+#include <chrono>
 #include <iostream>
 #include <limits>
 #include <mutex>
@@ -16,8 +18,10 @@ namespace pfc {
     column_vector start;
     column_vector location;
     long index = -1;
-    double start_value = std::numeric_limits<double>::quiet_NaN();
-    double value = std::numeric_limits<double>::quiet_NaN();
+    double start_value;
+    double value;
+    double tstart;
+    double tstop;
   };
 
   // solutions are sorted by the value: the smallest value is the obvious best
@@ -28,11 +32,21 @@ namespace pfc {
     return a.value > b.value; // smaller value is higher priority
   }
 
+  std::string
+  format_double(double x)
+  {
+    return fmt::format("{:.17e}", x);
+  }
+
   inline std::ostream&
   operator<<(std::ostream& os, solution const& sol)
   {
-    os << sol.index << '\t' << sol.start << '\t' << sol.start_value << '\t'
-       << sol.location << '\t' << sol.value;
+    auto delta = sol.start - sol.location;
+    double dist = dlib::length(delta);
+    os << sol.index << '\t' << format_double(sol.tstart) << '\t' << sol.start
+       << '\t' << format_double(sol.start_value) << '\t'
+       << format_double(sol.tstop) << '\t' << sol.location << '\t'
+       << format_double(sol.value) << '\t' << dist;
     return os;
   }
 
@@ -131,18 +145,35 @@ rastrigin_dlib_wrapper(column_vector const& x)
   return pfc::rastrigin({begin(x), end(x)});
 }
 
-column_vector
+inline double
+now_in_milliseconds()
+{
+  using namespace std::chrono;
+  auto const t = steady_clock::now().time_since_epoch();
+  return duration<double>(t).count() * 1000.0;
+}
+
+solution
 do_one_minimization(column_vector const& starting_point)
 {
-  column_vector location{starting_point};
+  solution result;
+  result.start = starting_point;
+  result.start_value = rastrigin_dlib_wrapper(starting_point);
+  result.tstart = now_in_milliseconds();
+
+  // the minimization routine will write the answer directly into
+  // result.location so no extra copying is needed.
+  result.location = starting_point;
   dlib::find_min_using_approximate_derivatives(
     dlib::bfgs_search_strategy(),
     dlib::objective_delta_stop_strategy(1.0e-6),
     rastrigin_dlib_wrapper,
-    location,
+    result.location,
     -1.0); // we choose a negative value because our function is non-negative
-  // location is the estimated location of the minimum.
-  return location;
+  // result.location is the estimated location of the minimum.
+  result.tstop = now_in_milliseconds();
+  result.value = rastrigin_dlib_wrapper(result.location);
+  return result;
 }
 
 inline region
@@ -193,12 +224,7 @@ do_all_work(long ndim, pfc::shared_result& solutions)
         starting_point =
           pfc::random_point_within(starting_point_volume, engine);
       }
-      solution result;
-      result.start = starting_point;
-      result.start_value = rastrigin_dlib_wrapper(starting_point);
-      column_vector const local_min = do_one_minimization(starting_point);
-      result.location = local_min;
-      result.value = rastrigin_dlib_wrapper(local_min);
+      solution result = do_one_minimization(starting_point);
 
       solutions.insert(result);
       // If we don't have a good enough solution yet, then keep going.
@@ -244,13 +270,13 @@ main(int argc, char** argv)
   }
 
   // Print a header for the data.
-  std::cout << "idx\t";
+  std::cout << "idx\ttstart\t";
   for (long i = 0; i != ndim; ++i)
     std::cout << 's' << i << '\t';
-  std::cout << "fs\t";
+  std::cout << "fs\ttstop\t";
   for (long i = 0; i != ndim; ++i)
     std::cout << 'x' << i << '\t';
-  std::cout << "min\n";
+  std::cout << "min\tdist\n";
 
   for (auto const& result : results) {
     std::cout << result << '\n';
