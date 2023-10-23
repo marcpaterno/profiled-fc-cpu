@@ -1,12 +1,12 @@
 add_library(profiled_fc_cpu minuit2_support.cc rosenbrock.cc rastrigin.cc
-                            geometry.cc)
+                            geometry.cc solution.cc shared_result.cc)
 target_include_directories(
   profiled_fc_cpu PUBLIC ${PROJECT_SOURCE_DIR}/src
                          ${PROJECT_SOURCE_DIR}/external/include)
 target_link_libraries(
   profiled_fc_cpu
   PUBLIC dlib::dlib
-  PRIVATE Minuit2::Minuit2 ${CMAKE_DL_LIBS} TBB::tbb)
+  PRIVATE Minuit2::Minuit2 ${CMAKE_DL_LIBS} TBB::tbb fmt::fmt)
 
 add_executable(optimization_ex optimization_ex.cc)
 target_link_libraries(optimization_ex PRIVATE dlib::dlib profiled_fc_cpu)

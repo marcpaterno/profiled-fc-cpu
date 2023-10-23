@@ -1,8 +1,9 @@
 #include "geometry.hh"
 #include "rastrigin.hh"
+#include "shared_result.hh"
+#include "solution.hh"
 
 #include "dlib/optimization.h"
-#include "fmt/format.h"
 #include "tbb/task_arena.h" // for default_concurrency()
 #include "tbb/task_group.h"
 
@@ -13,133 +14,10 @@
 #include <string>
 #include <utility>
 
-namespace pfc {
-  struct solution {
-    column_vector start;
-    column_vector location;
-    long index = -1;
-    double start_value;
-    double value;
-    double tstart;
-    double tstop;
-  };
-
-  // solutions are sorted by the value: the smallest value is the obvious best
-  // minimum so far. Note that the *smallest* value has the highest priority.
-  inline bool
-  operator<(solution const& a, solution const& b)
-  {
-    return a.value > b.value; // smaller value is higher priority
-  }
-
-  std::string
-  format_double(double x)
-  {
-    return fmt::format("{:.17e}", x);
-  }
-
-  inline std::ostream&
-  operator<<(std::ostream& os, solution const& sol)
-  {
-    auto delta = sol.start - sol.location;
-    double dist = dlib::length(delta);
-    os << sol.index << '\t' << format_double(sol.tstart) << '\t' << sol.start
-       << '\t' << format_double(sol.start_value) << '\t'
-       << format_double(sol.tstop) << '\t' << sol.location << '\t'
-       << format_double(sol.value) << '\t' << dist;
-    return os;
-  }
-
-  // shared_result is a container for attempted solutions of a minimization
-  // problem. It is suitable to be used from multiple threads; it contains
-  // simple internal locking to prevent race conditions.
-  class shared_result {
-  public:
-    explicit shared_result(double desired_min);
-
-    // Make sure we can neither copy or move a shared_result.
-    shared_result(shared_result const&) = delete;
-    shared_result& operator=(shared_result const&) = delete;
-    shared_result(shared_result&&) = delete;
-    shared_result& operator=(shared_result&&) = delete;
-
-    // Insert a copy of sol into the shared result.
-    // We take the argument by value because we want to make the copy.
-    void insert(solution sol);
-
-    // Obtain a copy of the best result thus far
-    solution best() const;
-
-    // Check whether we are done or not. The current implementation is very
-    // naive; we are done when the best solution has found a local minimum with
-    // value less than the value of desired_min used to configure the
-    // shared_result object.
-    bool is_done() const;
-
-    friend std::ostream& operator<<(std::ostream& os, shared_result const& r);
-
-    // Return a vector containing the priority-sorted solutions. Note that this
-    // member function is non-const because it empties the priority queue during
-    // the process of constructing the vector.
-    std::vector<solution> to_vector();
-
-  private:
-    std::mutex mutable guard_results_;
-    std::priority_queue<solution> results_;
-    long num_results_;
-    double const desired_min_;
-  }; // shared_result
-
-  shared_result::shared_result(double desired_min) : desired_min_(desired_min)
-  {}
-
-  void
-  shared_result::insert(solution s)
-  {
-    // Maybe we should be inspecting 's' and deciding whether we are done based
-    // on it? We do not know what our real strategy for declaring that we are
-    // done will be.
-    std::scoped_lock<std::mutex> lock(guard_results_);
-    num_results_ += 1;
-
-    s.index = num_results_;
-    results_.push(s);
-  }
-
-  solution
-  shared_result::best() const
-  {
-    std::scoped_lock<std::mutex> lock(guard_results_);
-    solution result = results_.top();
-    return result;
-  }
-
-  bool
-  shared_result::is_done() const
-  {
-    auto current_best = best();
-    return current_best.value < desired_min_;
-  }
-
-  std::vector<solution>
-  shared_result::to_vector()
-  {
-    std::vector<solution> result;
-    std::scoped_lock<std::mutex> lock(guard_results_);
-    while (!results_.empty()) {
-      result.push_back(results_.top());
-      results_.pop();
-    }
-    return result;
-  }
-} // namespace pfc
-
-using namespace pfc;
-
 // This is a simple wrapper to adapt the pfc::rastrigin function to the
 // interface expected by dlib.
 inline double
-rastrigin_dlib_wrapper(column_vector const& x)
+rastrigin_dlib_wrapper(pfc::column_vector const& x)
 {
   using namespace std; // to allow std::begin to be found
   return pfc::rastrigin({begin(x), end(x)});
@@ -153,10 +31,10 @@ now_in_milliseconds()
   return duration<double>(t).count() * 1000.0;
 }
 
-solution
-do_one_minimization(column_vector const& starting_point)
+pfc::solution
+do_one_minimization(pfc::column_vector const& starting_point)
 {
-  solution result;
+  pfc::solution result;
   result.start = starting_point;
   result.start_value = rastrigin_dlib_wrapper(starting_point);
   result.tstart = now_in_milliseconds();
@@ -176,16 +54,16 @@ do_one_minimization(column_vector const& starting_point)
   return result;
 }
 
-inline region
-box_in_n_dim(int ndim, double low, double high)
+inline pfc::region
+make_box_in_n_dim(int ndim, double low, double high)
 {
-  column_vector lo(ndim);
-  column_vector hi(ndim);
+  pfc::column_vector lo(ndim);
+  pfc::column_vector hi(ndim);
   for (int i = 0; i < ndim; ++i) {
     lo(i) = low;
     hi(i) = high;
   }
-  region result(lo, hi);
+  pfc::region result(lo, hi);
   return result;
 }
 
@@ -195,18 +73,16 @@ do_all_work(long ndim, pfc::shared_result& solutions)
   // The task group is what we use to schedule tasks to run.
   oneapi::tbb::task_group tasks;
 
-  // region const starting_point_volume({-10.0, -10.0, -10.0, -10.0, -10.0,
-  // -10.0, -10.0}, {10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0});
-
-  region const starting_point_volume = box_in_n_dim(ndim, -10.0, 10.0);
+  pfc::region const starting_point_volume =
+    make_box_in_n_dim(ndim, -10.0, 10.0);
   std::mutex protect_engine;
   std::mt19937 engine;
 
   int const num_starting_points = oneapi::tbb::info::default_concurrency();
   for (int i = 0; i != num_starting_points; ++i) {
 
-    // find_with_continuation is the closure object we execute in each TBB task.
-    // It works by:
+    // find_with_continuation is the closure object we execute in each TBB
+    // task. It works by:
     //    1. calling the local minimization function for the given starting
     //       point.
     //    2. recording the resulting minimum in the shared solution.
@@ -218,20 +94,21 @@ do_all_work(long ndim, pfc::shared_result& solutions)
     auto find_with_continuation =
       [&solutions, &starting_point_volume, &protect_engine, &engine, &tasks](
         auto& continuation) -> void {
-      column_vector starting_point;
+      pfc::column_vector starting_point;
       { // scope to manage lifetime of the lock
         std::scoped_lock<std::mutex> lock(protect_engine);
         starting_point =
           pfc::random_point_within(starting_point_volume, engine);
       }
-      solution result = do_one_minimization(starting_point);
+      pfc::solution result = do_one_minimization(starting_point);
 
       solutions.insert(result);
       // If we don't have a good enough solution yet, then keep going.
       // Note that it is possible that, in a single thread, we will observe
       // the following:
       //      1. is_done returns false
-      //      2. another thread finishes a task, records the result, and is_done
+      //      2. another thread finishes a task, records the result, and
+      //      is_done
       //         is now true.
       //      3. the original thread continues and schedules another task.
       //
