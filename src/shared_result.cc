@@ -1,49 +1,80 @@
 #include "shared_result.hh"
 
+#include <algorithm>
 #include <ostream>
 
 namespace pfc {
 
-  shared_result::shared_result(double desired_min) : desired_min_(desired_min)
+  shared_result::shared_result(double desired_min, std::size_t max_results)
+    : desired_min_(desired_min), max_results_(max_results)
   {}
 
   void
   shared_result::insert(solution s)
   {
-    // Maybe we should be inspecting 's' and deciding whether we are done based
-    // on it? We do not know what our real strategy for declaring that we are
-    // done will be.
     std::scoped_lock<std::mutex> lock(guard_results_);
     num_results_ += 1;
-
     s.index = num_results_;
-    results_.push(s);
+    if (s.value < desired_min_)
+      done_ = true;
+
+    if (results_.empty()) {
+      results_.push_back(s);
+      return;
+    }
+
+    if (num_results_ > max_results_) {
+      // Our vector of solutions is already sorted.
+      // If s is not better than the worst, forget it.
+      if (results_.back() < s) {
+        return;
+      }
+
+      // Otherwise, insert it and drop the last.
+      auto i = std::lower_bound(results_.begin(), results_.end(), s);
+      results_.insert(i, s);
+      results_.pop_back();
+      return;
+    }
+
+    if (num_results_ == max_results_) {
+      // solution s will "fill" our vector. Record it, and then sort the vector.
+      // It will be kept sorted from here on.
+      results_.push_back(s);
+      std::sort(results_.begin(), results_.end());
+      return;
+    }
+
+    // If we are here, then we have not yet "filled" the vector; push it onto
+    // the vector.
+    results_.push_back(s);
   }
 
   solution
   shared_result::best() const
   {
     std::scoped_lock<std::mutex> lock(guard_results_);
-    solution result = results_.top();
-    return result;
+
+    if (num_results_ >= max_results_) {
+      // The vector is sorted
+      return results_[0];
+    }
+
+    // If the vector is not sorted, find the best
+    return *std::min_element(results_.begin(), results_.end());
   }
 
   bool
   shared_result::is_done() const
   {
-    auto current_best = best();
-    return current_best.value < desired_min_;
+    std::scoped_lock<std::mutex> lock(guard_results_);
+    return done_;
   }
 
   std::vector<solution>
   shared_result::to_vector()
   {
-    std::vector<solution> result;
     std::scoped_lock<std::mutex> lock(guard_results_);
-    while (!results_.empty()) {
-      result.push_back(results_.top());
-      results_.pop();
-    }
-    return result;
+    return results_;
   }
 } // namespace pfc

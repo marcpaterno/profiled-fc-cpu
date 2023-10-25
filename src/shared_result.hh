@@ -5,7 +5,6 @@
 
 #include <iosfwd>
 #include <mutex>
-#include <queue>
 #include <vector>
 
 namespace pfc {
@@ -14,7 +13,7 @@ namespace pfc {
   // simple internal locking to prevent race conditions.
   class shared_result {
   public:
-    explicit shared_result(double desired_min);
+    explicit shared_result(double desired_min, std::size_t max_results = 10);
 
     // Make sure we can neither copy or move a shared_result.
     shared_result(shared_result const&) = delete;
@@ -37,16 +36,15 @@ namespace pfc {
 
     friend std::ostream& operator<<(std::ostream& os, shared_result const& r);
 
-    // Return a vector containing the priority-sorted solutions. Note that this
-    // member function is non-const because it empties the priority queue during
-    // the process of constructing the vector.
     std::vector<solution> to_vector();
 
   private:
     std::mutex mutable guard_results_;
-    std::priority_queue<solution> results_;
-    long num_results_;
+    std::vector<solution> results_;
+    long num_results_ = 0;
     double const desired_min_;
+    bool done_ = false;
+    std::size_t max_results_;
   }; // shared_result
 
 } // namespace pfc

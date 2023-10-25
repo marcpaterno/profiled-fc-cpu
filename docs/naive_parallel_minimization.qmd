@@ -192,3 +192,26 @@ ggplot(x7, aes(d)) +
 
 There is no indication that any individual minimization task takes very long.
 It is merely the number of tasks needed to blunder into the right minimum that seems to make the running time so large.
+Note that a significant part of the reason the long runs *are* long is that *all* of the local solutions are kept.
+
+### 8 dimensions
+
+With the code altered to keep only the top 10 solutions, it is possible to run a problemk in 8 dimensions.
+The times to completion, as a function of the number of dimensions, are:
+
+```{r}
+t <- c(223.870, 64.242, 28.180, 0.293, 0.084, 0.023, 0.023, 0.020)
+d <- c(8, 7, 6, 5, 4, 3, 2, 1)
+times <- tibble(dim=d, t=t)
+knitr::kable(times, col.name=c("dimensionality", "wall-clock time (s)"))
+```
+
+```{r}
+ggplot(times, aes(d, t)) +
+  geom_point() +
+  labs(x="number of dimensions", y="wall-clock running time (s)") +
+  scale_x_log10() +
+  scale_y_log10()
+```
+
+ 

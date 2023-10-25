@@ -57,3 +57,9 @@ add_test(geometry_test geometry_test)
 
 add_executable(tbb_example tbb_example.cc)
 target_link_libraries(tbb_example PRIVATE TBB::tbb)
+
+add_executable(shared_result_test shared_result.test.cc)
+target_include_directories(shared_result_test PUBLIC ${PROJECT_SOURCE_DIR}/src)
+target_link_libraries(shared_result_test PRIVATE Catch2::Catch2WithMain
+                                            profiled_fc_cpu)
+add_test(shared_result_test shared_result_test)

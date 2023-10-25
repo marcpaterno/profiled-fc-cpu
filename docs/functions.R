@@ -26,7 +26,7 @@ read_data <- function(namefragment)
 {
   featherfile <- paste0(namefragment, ".feather")
   if (file.exists(featherfile)) return(feather::read_feather(featherfile))
-  x <- data.table::fread(paste0(namefragment, ".txt"))
+  x <- data.table::fread(paste0(namefragment, ".txt.xz"))
   feather::write_feather(x, featherfile)
   return(x)
 }

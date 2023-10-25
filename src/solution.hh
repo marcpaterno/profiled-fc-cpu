@@ -21,7 +21,7 @@ namespace pfc {
   inline bool
   operator<(solution const& a, solution const& b)
   {
-    return a.value > b.value; // smaller value is higher priority
+    return a.value < b.value; // smaller value is higher priority
   }
 
   std::ostream& operator<<(std::ostream& os, solution const& s);
