@@ -132,6 +132,19 @@ namespace pfc {
     return upper_(i);
   }
 
+  inline region
+  make_box_in_n_dim(int ndim, double low, double high)
+  {
+    column_vector lo(ndim);
+    column_vector hi(ndim);
+    for (int i = 0; i < ndim; ++i) {
+      lo(i) = low;
+      hi(i) = high;
+    }
+    region result(lo, hi);
+    return result;
+  }
+
   // The following should not be used outside the implementaton of geometry.cc.
   // They are here only to allow testing.
   namespace detail {

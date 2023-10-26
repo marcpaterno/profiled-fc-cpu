@@ -34,8 +34,11 @@ namespace pfc {
     // shared_result object.
     bool is_done() const;
 
+    // Write out all the contained solutions in a format suitable for automated
+    // processing.
     friend std::ostream& operator<<(std::ostream& os, shared_result const& r);
 
+    // Return a copy of the contained solutions.
     std::vector<solution> to_vector();
 
   private:
@@ -45,8 +48,7 @@ namespace pfc {
     double const desired_min_;
     bool done_ = false;
     std::size_t max_results_;
-  }; // shared_result
-
+  };
 } // namespace pfc
 
 #endif
