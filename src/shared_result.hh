@@ -13,7 +13,7 @@ namespace pfc {
   // simple internal locking to prevent race conditions.
   class shared_result {
   public:
-    explicit shared_result(double desired_min, std::size_t max_results = 10);
+    explicit shared_result(double desired_min, std::size_t max_results);
 
     // Make sure we can neither copy or move a shared_result.
     shared_result(shared_result const&) = delete;

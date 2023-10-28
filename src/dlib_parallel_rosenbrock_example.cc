@@ -29,7 +29,7 @@ rosenbrock_dlib_wrapper(pfc::column_vector const& x)
 // It is a blocking function that schedules parallel work, and waits until that
 // work is done before returning.
 void
-do_all_work(long ndim, pfc::shared_result& solutions)
+do_all_work(long ndim, pfc::shared_result& solutions, int num_starting_points)
 {
   // The task group is what we use to schedule tasks to run.
   oneapi::tbb::task_group tasks;
@@ -42,8 +42,6 @@ do_all_work(long ndim, pfc::shared_result& solutions)
   std::mutex protect_engine;
   std::mt19937 engine;
 
-  // We will start up as many tasks as TBB says we have threads.
-  int const num_starting_points = oneapi::tbb::info::default_concurrency();
   for (int i = 0; i != num_starting_points; ++i) {
 
     pfc::ParallelMinimizer minimizer(rosenbrock_dlib_wrapper,
@@ -70,11 +68,14 @@ main(int argc, char** argv)
     return 1;
   }
   long const ndim = std::stol(argv[1]);
+
+  int const num_starting_points = oneapi::tbb::info::default_concurrency();
+
   // Create shared state for answer.
   // We're done when we have found a minimum with a value < 1.0e-6.
-  pfc::shared_result solutions(1.0e-6);
+  pfc::shared_result solutions(1.0e-6, num_starting_points);
 
-  do_all_work(ndim, solutions);
+  do_all_work(ndim, solutions, num_starting_points);
   auto results = solutions.to_vector();
   if (results.empty()) {
     std::cerr << "No solutions were found!\n";
