@@ -1,0 +1,35 @@
+{
+  "files.associations": {
+    "mutex": "cpp",
+    "__tree": "cpp",
+    "deque": "cpp",
+    "functional": "cpp",
+    "hash_map": "cpp",
+    "list": "cpp",
+    "map": "cpp",
+    "queue": "cpp",
+    "set": "cpp",
+    "string": "cpp",
+    "unordered_map": "cpp",
+    "unordered_set": "cpp",
+    "vector": "cpp",
+    "*.tcc": "cpp",
+    "chrono": "cpp",
+    "format": "cpp",
+    "ostream": "cpp"
+  },
+  "cmake.configureOnOpen": false,
+  "cmake.configureArgs": [
+    "-DBUILD_SHARED_LIBS=on",
+    "-DDLIB_JPEG_SUPPORT=off",
+    "-DDLIB_LINK_WITH_SQLITE3=off",
+    "-DDLIB_USE_CUDA=off",
+    "-DDLIB_PNG_SUPPORT=off",
+    "-DDLIB_GIF_SUPPORT=off",
+    "-DDLIB_WEBP_SUPPORT=off",
+    "-DDLIB_USE_MKL_FFT=off",
+    "-DDLIB_USE_FFMPEG=off",
+    "-DDLIB_NO_GUI_SUPPORT=on"
+  ],
+  "cmake.buildDirectory": "${workspaceFolder}/build/${buildType}"
+}

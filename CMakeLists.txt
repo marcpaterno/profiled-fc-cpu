@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.26)
 project(
   profiled_fc_cpu
-  VERSION 0.1.0
+  VERSION 0.2.0
   LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED On)
@@ -30,11 +30,14 @@ FetchContent_Declare(
 
 # We are using a fork of the dlib repository so that we can add
 # features if we so desire.
+# We are using the head of master in an experiment to see if this
+# provides good integration for simultaneous development of two
+# libraries (profiled_fc_cpu and dlib).
 FetchContent_Declare(
   dlib
   GIT_REPOSITORY https://github.com/marcpaterno/dlib.git
-  GIT_TAG 22f66ecba6fff616bc501bbfcd73334ad55f8fc3
-  GIT_SHALLOW TRUE)
+  GIT_TAG master
+  GIT_SHALLOW false)
 
 FetchContent_MakeAvailable(catch)
 FetchContent_MakeAvailable(dlib)

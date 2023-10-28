@@ -9,7 +9,6 @@ debug-build/
 *.dot
 build/
 **/.DS_Store
-.vscode/
 .Rproj.user
 xcode/
 external/share/

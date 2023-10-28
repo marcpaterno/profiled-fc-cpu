@@ -1,29 +1,9 @@
 #include "geometry.hh"
 
-#include "Random123/ReinterpretCtr.hpp"
-#include "Random123/array.h"
-#include "Random123/threefry.h"
-
 #include "fmt/format.h"
 
 #include <ostream>
 #include <stdexcept>
-
-namespace pfc {
-  class Generator {
-  public:
-    explicit Generator(uint32_t id1 = 0, uint32_t id2 = 0);
-    double next_double();
-
-  private:
-    using G = r123::ReinterpretCtr<r123::Array8x32, r123::Threefry4x64>;
-    G generator;
-    G::key_type key;
-    G::ctr_type ctr{{}}; // initialize with zeros
-  };
-
-  Generator::Generator(uint32_t id1, uint32_t id2) : key{{id1, id2}} {};
-}
 
 std::size_t
 pfc::detail::determine_split_dimension(pfc::region const& r)
