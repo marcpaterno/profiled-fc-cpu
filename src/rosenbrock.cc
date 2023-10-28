@@ -23,6 +23,20 @@ namespace pfc {
     return square(1.0 - x) + 100.0 * square(y - square(x));
   }
 
+  double
+  vec_rosenbrock(std::vector<double> const& x)
+  {
+    double sum = 0.0;
+    std::size_t N = x.size();
+    for (std::size_t i = 1; i != N; ++i) {
+      double const t1 = x[i] - x[i - 1] * x[i - 1];
+      sum += 100.0 * t1 * t1;
+      double const t2 = 1.0 - x[i - 1];
+      sum += t2 * t2;
+    }
+    return sum;
+  }
+
   // Implementation of RosenbrockWrapper.
   double
   RosenbrockWrapper::operator()(std::vector<double> const& x) const

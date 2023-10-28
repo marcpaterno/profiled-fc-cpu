@@ -21,6 +21,13 @@ target_include_directories(dlib_parallel_rastrigin_example
 target_link_libraries(dlib_parallel_rastrigin_example
                       PRIVATE dlib::dlib profiled_fc_cpu TBB::tbb fmt::fmt)
 
+add_executable(dlib_parallel_rosenbrock_example
+               dlib_parallel_rosenbrock_example.cc)
+target_include_directories(dlib_parallel_rosenbrock_example
+                           PRIVATE ${PROJECT_SOURCE_DIR}/external/include)
+target_link_libraries(dlib_parallel_rosenbrock_example
+                      PRIVATE dlib::dlib profiled_fc_cpu TBB::tbb fmt::fmt)
+
 add_executable(minuit2_example minuit2_example.cc)
 target_include_directories(minuit2_example PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(minuit2_example PRIVATE Minuit2::Minuit2 profiled_fc_cpu)
@@ -61,5 +68,5 @@ target_link_libraries(tbb_example PRIVATE TBB::tbb)
 add_executable(shared_result_test shared_result.test.cc)
 target_include_directories(shared_result_test PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(shared_result_test PRIVATE Catch2::Catch2WithMain
-                                            profiled_fc_cpu)
+                                                 profiled_fc_cpu)
 add_test(shared_result_test shared_result_test)
