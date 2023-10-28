@@ -36,7 +36,7 @@ FetchContent_Declare(
 FetchContent_Declare(
   dlib
   GIT_REPOSITORY https://github.com/marcpaterno/dlib.git
-  GIT_TAG master
+  GIT_TAG profiled_fc_features
   GIT_SHALLOW false)
 
 FetchContent_MakeAvailable(catch)
