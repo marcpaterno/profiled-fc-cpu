@@ -19,6 +19,6 @@ pfc::operator<<(std::ostream& os, pfc::solution const& sol)
   os << sol.index << '\t' << format_double(sol.tstart) << '\t' << sol.start
      << '\t' << format_double(sol.start_value) << '\t'
      << format_double(sol.tstop) << '\t' << sol.location << '\t'
-     << format_double(sol.value) << '\t' << dist;
+     << format_double(sol.value) << '\t' << dist << '\t' << sol.nsteps;
   return os;
 }

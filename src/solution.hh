@@ -14,6 +14,7 @@ namespace pfc {
     double value;
     double tstart;
     double tstop;
+    long nsteps = -1; // not all algorithms will fill this value
   };
 
   // solutions are sorted by the value: the smallest value is the obvious best

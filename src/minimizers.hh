@@ -33,7 +33,7 @@ namespace pfc {
     // the minimization routine will write the answer directly into
     // result.location so no extra copying is needed.
     result.location = starting_point;
-    dlib::find_min_using_approximate_derivatives(
+    auto [f_value, nsteps] = dlib::find_min_using_approximate_derivatives(
       dlib::bfgs_search_strategy(),
       dlib::objective_delta_stop_strategy(1.0e-6),
       f,
@@ -41,7 +41,8 @@ namespace pfc {
       -1.0); // we choose a negative value because our function is non-negative
     // result.location is the estimated location of the minimum.
     result.tstop = now_in_milliseconds();
-    result.value = f(result.location);
+    result.value = f_value;
+    result.nsteps = nsteps;
     return result;
   }
 

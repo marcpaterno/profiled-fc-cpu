@@ -88,7 +88,7 @@ main(int argc, char** argv)
   std::cout << "fs\ttstop\t";
   for (long i = 0; i != ndim; ++i)
     std::cout << 'x' << i << '\t';
-  std::cout << "min\tdist\n";
+  std::cout << "min\tdist\tnsteps\n";
 
   for (auto const& result : results) {
     std::cout << result << '\n';

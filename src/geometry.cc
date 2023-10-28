@@ -4,6 +4,8 @@
 #include "Random123/array.h"
 #include "Random123/threefry.h"
 
+#include "fmt/format.h"
+
 #include <ostream>
 #include <stdexcept>
 
@@ -104,10 +106,10 @@ namespace pfc {
   {
     if (cv.size() == 0)
       return os;
-    os << cv(0);
+    os << fmt::format("{:.17e}", cv(0));
 
     for (std::size_t i = 1; i != cv.size(); ++i) {
-      os << '\t' << cv(i);
+      os << '\t' << fmt::format("{:.17e}", cv(i));
     }
     return os;
   }
