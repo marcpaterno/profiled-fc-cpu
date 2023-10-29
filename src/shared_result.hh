@@ -11,11 +11,17 @@ namespace pfc {
   // shared_result is a container for attempted solutions of a minimization
   // problem. It is suitable to be used from multiple threads; it contains
   // simple internal locking to prevent race conditions.
+  //
+  // shared_result does not contain the code to do the minimization; it is only
+  // a repository for results and a tool for determining whether one of the
+  // results is "good enough".
   class shared_result {
   public:
-    explicit shared_result(double desired_min, std::size_t max_results);
+    shared_result(double desired_min, std::size_t max_results);
 
     // Make sure we can neither copy or move a shared_result.
+    // Since they are potentially large, we do not want to accidentally pass
+    // them around.
     shared_result(shared_result const&) = delete;
     shared_result& operator=(shared_result const&) = delete;
     shared_result(shared_result&&) = delete;
@@ -25,7 +31,7 @@ namespace pfc {
     // We take the argument by value because we want to make the copy.
     void insert(solution sol);
 
-    // Obtain a copy of the best result thus far
+    // Obtain a copy of the best result thus far.
     solution best() const;
 
     // Check whether we are done or not. The current implementation is very
