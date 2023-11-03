@@ -2,6 +2,7 @@
 #define PROFILED_FC_CPU_MINIMIZERS_HH
 
 #include "geometry.hh"
+#include "protected_engine.hh"
 #include "shared_result.hh"
 #include "solution.hh"
 
@@ -59,20 +60,17 @@ namespace pfc {
     FUNC& func;
     pfc::shared_result& solutions;
     pfc::region const& starting_point_volume;
-    std::mutex& protect_engine;
-    std::mt19937& engine;
+    pfc::protected_engine& engine;
     oneapi::tbb::task_group& tasks;
 
     ParallelMinimizer(FUNC& function_to_minimize,
                       pfc::shared_result& sol,
                       pfc::region const& spv,
-                      std::mutex& pe,
-                      std::mt19937& eng,
+                      pfc::protected_engine& eng,
                       oneapi::tbb::task_group& tsks)
       : func(function_to_minimize)
       , solutions(sol)
       , starting_point_volume(spv)
-      , protect_engine(pe)
       , engine(eng)
       , tasks(tsks)
     {}
@@ -82,14 +80,10 @@ namespace pfc {
     operator()(CONTINUATION& continuation) const
     {
       pfc::column_vector starting_point;
-      { // scope to manage lifetime of the lock
-        std::scoped_lock<std::mutex> lock(protect_engine);
-        starting_point =
-          pfc::random_point_within(starting_point_volume, engine);
-      }
+      starting_point = pfc::random_point_within(starting_point_volume, engine);
       pfc::solution result = pfc::do_one_minimization(func, starting_point);
-
       solutions.insert(result);
+
       // If we don't have a good enough solution yet, then keep going.
       // Note that it is possible that, in a single thread, we will observe
       // the following:
