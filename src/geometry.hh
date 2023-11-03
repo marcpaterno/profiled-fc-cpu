@@ -91,7 +91,7 @@ namespace pfc {
 
   // Return a random point, drawn from a uniform distribution across the whole
   // region.
-  template <typename ENGINE>
+  template <typename URBG>
   column_vector random_point_within(region const& r);
 
   // Implementation details below.
@@ -151,9 +151,10 @@ namespace pfc {
     std::size_t determine_split_dimension(pfc::region const& r);
   }
 
-  template <typename ENGINE>
+  template <typename URBG>
+    requires std::uniform_random_bit_generator<URBG>
   column_vector
-  random_point_within(region const& r, ENGINE& e)
+  random_point_within(region const& r, URBG& e)
   {
     column_vector result(r.ndims());
     // We need to make sure we do not generated a random value of 0, because

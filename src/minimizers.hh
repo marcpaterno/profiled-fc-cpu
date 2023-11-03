@@ -55,18 +55,18 @@ namespace pfc {
   //    3. if the shared solution says we are not done, generate a new
   //       starting point and call the continuation (which will be the same
   //       function).
-  template <typename FUNC>
+  template <typename FUNC, std::uniform_random_bit_generator URBG>
   struct ParallelMinimizer {
     FUNC& func;
     pfc::shared_result& solutions;
     pfc::region const& starting_point_volume;
-    pfc::protected_engine& engine;
+    pfc::protected_engine<URBG>& engine;
     oneapi::tbb::task_group& tasks;
 
     ParallelMinimizer(FUNC& function_to_minimize,
                       pfc::shared_result& sol,
                       pfc::region const& spv,
-                      pfc::protected_engine& eng,
+                      pfc::protected_engine<URBG>& eng,
                       oneapi::tbb::task_group& tsks)
       : func(function_to_minimize)
       , solutions(sol)

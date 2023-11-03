@@ -1,8 +1,6 @@
 #include "geometry.hh"
 #include "catch2/catch_test_macros.hpp"
 
-#include <random>
-
 using pfc::column_vector;
 using pfc::region;
 
@@ -94,7 +92,9 @@ TEST_CASE("splitting generations")
 TEST_CASE("random locations")
 {
   region three_d({-10.0, -5.0, 10.0}, {0.0, 5.0, 20.0});
-  std::mt19937 engine;
+  // We are using srd::ranlux48 not because it is great, but because we want to
+  // help make sure that any UniformRandomBitGenerator can be used.
+  std::ranlux48 engine;
   CHECK(three_d.volume() == 1000.0);
   for (int i = 0; i < 1000; ++i) {
     auto location = pfc::random_point_within(three_d, engine);
