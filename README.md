@@ -72,3 +72,8 @@ It uses the Rosenbrock function, on which Minuit2 fares well.
 
 This program demonstrates the use of a simple parallelization over otherwise serial local minimization.
 This program also demonstrates the use of a task-based parallel programming model.
+
+### dlib_parallel_rosenbrock_example
+
+This program demonstrate the use of a simple parallelization of otherwise serial local minimization.
+It uses the Rosenbrock function in *n* dimensions; it runs in about 45 seconds in 1000 dimensions on a 12-core M2 MacBook pro.
