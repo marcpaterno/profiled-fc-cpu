@@ -84,4 +84,37 @@ namespace pfc {
     std::scoped_lock<std::mutex> lock(guard_results_);
     return num_results_;
   }
+
+  bool
+  shared_result::empty() const
+  {
+    std::scoped_lock<std::mutex> lock(guard_results_);
+    return results_.empty();
+  }
+
+  void
+  shared_result::print_report(std::ostream& os) const
+  {
+    std::scoped_lock<std::mutex> lock(guard_results_);
+    if (results_.empty()) {
+      return;
+    }
+    
+    // Every starting point and solution has the same 'size', which is the
+    // dimenstionality of the function we're minimizing.
+    auto ndim = results_.front().location.size();
+
+    // Print a header for the data.
+    os << "idx\ttstart\t";
+    for (long i = 0; i != ndim; ++i)
+      os << 's' << i << '\t';
+    os << "fs\ttstop\t";
+    for (long i = 0; i != ndim; ++i)
+      os << 'x' << i << '\t';
+    os << "min\tdist\tnsteps\n";
+
+    for (auto const& result : results_) {
+      os << result << '\n';
+    }
+  }
 } // namespace pfc

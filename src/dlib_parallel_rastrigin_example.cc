@@ -72,28 +72,16 @@ main(int argc, char** argv)
   pfc::shared_result solutions(1.0e-6, num_starting_points);
 
   do_all_work(ndim, solutions, num_starting_points);
-  auto results = solutions.to_vector();
-  if (results.empty()) {
+
+  if (solutions.empty()) {
     std::cerr << "No solutions were found!\n";
     return 1;
   }
-
 
   // We print this count information to standard error so that redirecting
   // standard output to a file does not result in this text also being
   // redirected.
   std::cerr << " A total of " << solutions.num_results()
             << " minimizations were done.\n";
-  // Print a header for the data.
-  std::cout << "idx\ttstart\t";
-  for (long i = 0; i != ndim; ++i)
-    std::cout << 's' << i << '\t';
-  std::cout << "fs\ttstop\t";
-  for (long i = 0; i != ndim; ++i)
-    std::cout << 'x' << i << '\t';
-  std::cout << "min\tdist\tnsteps\n";
-
-  for (auto const& result : results) {
-    std::cout << result << '\n';
-  }
+  solutions.print_report(std::cout);
 }

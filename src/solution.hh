@@ -26,6 +26,12 @@ namespace pfc {
   }
 
   std::ostream& operator<<(std::ostream& os, solution const& s);
+
+  inline
+  long ndims(solution const& s)
+  {
+    return s.location.size();
+  }
 }
 
 #endif

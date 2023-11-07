@@ -50,6 +50,13 @@ namespace pfc {
     // Report how many results have been found.
     long num_results() const;
 
+    // Report whether we have any solutions.
+    bool empty() const;
+
+    // Print report output to the given stream. This output is suitable for
+    // machine analysis, but may not be very good for human reading.
+    void print_report(std::ostream& os) const;
+
   private:
     std::mutex mutable guard_results_;
     std::vector<solution> results_;
