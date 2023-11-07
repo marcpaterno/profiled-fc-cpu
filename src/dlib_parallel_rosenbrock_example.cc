@@ -44,7 +44,6 @@ do_all_work(long ndim, pfc::shared_result& solutions, int num_starting_points)
   pfc::protected_engine<std::mt19937> engine;
 
   for (int i = 0; i != num_starting_points; ++i) {
-
     pfc::ParallelMinimizer minimizer(rosenbrock_dlib_wrapper,
                                      solutions,
                                      starting_point_volume,
@@ -80,6 +79,11 @@ main(int argc, char** argv)
     return 1;
   }
 
+  // We print this count information to standard error so that redirecting
+  // standard output to a file does not result in this text also being
+  // redirected.
+  std::cerr << " A total of " << solutions.num_results()
+            << " minimizations were done.\n";
   // Print a header for the data.
   std::cout << "idx\ttstart\t";
   for (long i = 0; i != ndim; ++i)

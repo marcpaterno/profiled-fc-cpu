@@ -77,4 +77,11 @@ namespace pfc {
     std::scoped_lock<std::mutex> lock(guard_results_);
     return results_;
   }
+
+  long
+  shared_result::num_results() const
+  {
+    std::scoped_lock<std::mutex> lock(guard_results_);
+    return num_results_;
+  }
 } // namespace pfc

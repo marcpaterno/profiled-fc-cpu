@@ -78,6 +78,12 @@ main(int argc, char** argv)
     return 1;
   }
 
+
+  // We print this count information to standard error so that redirecting
+  // standard output to a file does not result in this text also being
+  // redirected.
+  std::cerr << " A total of " << solutions.num_results()
+            << " minimizations were done.\n";
   // Print a header for the data.
   std::cout << "idx\ttstart\t";
   for (long i = 0; i != ndim; ++i)

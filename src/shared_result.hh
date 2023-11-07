@@ -47,6 +47,9 @@ namespace pfc {
     // Return a copy of the contained solutions.
     std::vector<solution> to_vector();
 
+    // Report how many results have been found.
+    long num_results() const;
+
   private:
     std::mutex mutable guard_results_;
     std::vector<solution> results_;
