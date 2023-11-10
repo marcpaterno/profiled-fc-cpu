@@ -53,8 +53,7 @@ namespace pfc {
   //       point.
   //    2. recording the resulting minimum in the shared solution.
   //    3. if the shared solution says we are not done, generate a new
-  //       starting point and call the continuation (which will be the same
-  //       function).
+  //       starting point keep trying.
   template <typename FUNC, std::uniform_random_bit_generator URBG>
   struct ParallelMinimizer {
     FUNC& func;
@@ -75,27 +74,16 @@ namespace pfc {
       , tasks(tsks)
     {}
 
-    template <typename CONTINUATION>
     void
-    operator()(CONTINUATION& continuation) const
+    operator()() const
     {
-      pfc::column_vector starting_point;
-      starting_point = pfc::random_point_within(starting_point_volume, engine);
-      pfc::solution result = pfc::do_one_minimization(func, starting_point);
-      solutions.insert(result);
-
-      // If we don't have a good enough solution yet, then keep going.
-      // Note that it is possible that, in a single thread, we will observe
-      // the following:
-      //      1. is_done returns false
-      //      2. another thread finishes a task, records the result, and
-      //         is_done is now true.
-      //      3. the original thread continues and schedules another task.
-      //
-      // Since this does not lead to an error (just a small amount of wasted
-      // effort) we are not currently concerned with this issue.
-      if (!solutions.is_done()) {
-        tasks.run([continuation]() { continuation(continuation); });
+      // Loop until we have a good enough solution.
+      while (!solutions.is_done()) {
+        pfc::column_vector starting_point;
+        starting_point =
+          pfc::random_point_within(starting_point_volume, engine);
+        pfc::solution result = pfc::do_one_minimization(func, starting_point);
+        solutions.insert(result);
       }
     }
   };

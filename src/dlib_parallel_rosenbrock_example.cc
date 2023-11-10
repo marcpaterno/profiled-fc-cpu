@@ -54,7 +54,7 @@ do_all_work(long ndim, pfc::shared_result& solutions, int num_starting_points)
     // We have to give a callable with no arguments to tasks.run, so we need
     // a lambda expression that captures all the arguments to be used
     // for the call to minimizer.
-    tasks.run([minimizer]() { minimizer(minimizer); });
+    tasks.run([minimizer]() { minimizer(); });
   }
   // Wait for all the tasks in the group to finish.
   tasks.wait();
