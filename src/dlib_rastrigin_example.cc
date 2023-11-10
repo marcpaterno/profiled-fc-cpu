@@ -26,7 +26,8 @@ double
 rastrigin_dlib_wrapper(column_vector const& x)
 {
   using namespace std; // to allow std::begin to be found
-  return pfc::rastrigin({begin(x), end(x)});
+  std::span xx = x;
+  return pfc::rastrigin(xx);
 }
 
 // Structure to supply the boundaries for the minimization search region.

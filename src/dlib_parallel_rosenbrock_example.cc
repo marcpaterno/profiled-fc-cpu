@@ -12,6 +12,7 @@
 #include <iostream>
 #include <limits>
 #include <string>
+#include <span>
 #include <utility>
 
 // This is a simple wrapper to adapt the pfc::rastrigin function to the
@@ -20,7 +21,8 @@ inline double
 rosenbrock_dlib_wrapper(pfc::column_vector const& x)
 {
   using namespace std; // to allow std::begin to be found
-  return pfc::vec_rosenbrock({begin(x), end(x)});
+  std::span  xx = x;
+  return pfc::vec_rosenbrock(xx);
 }
 
 // This is the function that does all the minimization work. We use this to

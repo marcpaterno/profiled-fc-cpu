@@ -2,22 +2,11 @@ name: for-fc-cpu
 channels:
   - conda-forge
 dependencies:
-  - black
-  - boost-cpp >= 1.82
-  - ca-certificates
-  - clang-format
+  - blis
   - cmake >= 3.26
   - cxx-compiler
-  - flake8
   - fmt
-  - lapack
   - minuit2
-  - mypy
   - ninja
-  - openblas
-  - openssl
-  - pydot
-  - pylint
   - tbb
   - tbb-devel
-  - toolz

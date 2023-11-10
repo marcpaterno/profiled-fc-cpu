@@ -16,8 +16,6 @@ include(CTest)
 # be passed variables to help find the right installations; see the
 # CMake documentation for each package to find out what variables are
 # used by each.
-find_package(Minuit2 REQUIRED)
-find_package(Boost 1.82 REQUIRED COMPONENTS stacktrace_basic)
 find_package(TBB 2021.10.0 REQUIRED)
 find_package(fmt REQUIRED)
 
