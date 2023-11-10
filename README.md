@@ -15,12 +15,14 @@ Note that when you activate this Conda environment, the environment variable `CX
 The CMake build instructions below make use of this fact.
 If you choose to get the compiler and Minuit2 some other way, it is up to you to tell CMake what compiler to use, and for you to make sure that the same compiler was used to build Minuit2.
 
+If you choose not to use a conda environment, then you must make sure that the blis, fmt and tbb libraries and headers are available to your compiler. On macOS, if you install them with Homebrew, everything will work.
+
 ## Use CMake to generate the build system
 
 I use CMake to direct the building of the software.
-The build also requires the Catch2 testing system.
-The CMake build will handle this automatically; if you choose not to use CMake, you need to make sure get and build Catch2.
-You will also need to direct the build to find the Minuit2 headers and libraries, and the Catch2 headers and libraries.
+The build also requires the Catch2 testing system and the Dlib library.
+The CMake build will handle obtaining both automatically; if you choose not to use CMake, you need to make sure get and build Catch2.
+You will also need to direct the build to find the Catch2 and Dlib headers and libraries.
 
 If you are using CMake, only out-of-source builds are supported.
 
@@ -33,14 +35,16 @@ If you are using CMake, only out-of-source builds are supported.
     # turn off the graphics-related and GPU-related parts of the package.
     
     # create the build system, in a release build using the clang++ and clang
-    # compilers found on $PATH. This is appropriate when, e.g., you are using
-    # the Conda environment to obtain some of the pre-built dependencies.
-    cmake -G Ninja -DCMAKE_CXX_COMPILER=$(which clang++) -DCMAKE_C_COMPILER=$(which clang) -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=on -DDLIB_JPEG_SUPPORT=off -DDLIB_LINK_WITH_SQLITE3=off -DDLIB_USE_CUDA=off -DDLIB_PNG_SUPPORT=off -DDLIB_GIF_SUPPORT=off -DDLIB_WEBP_SUPPORT=off -DDLIB_USE_MKL_FFT=off -DDLIB_USE_FFMPEG=off -DDLIB_NO_GUI_SUPPORT=on  ..
+    # compilers found on $PATH. If you are using a conda environment built as
+    # described above, the environment variable $CXX will be defined and used
+    # automatically by cmake to find the compiler. Otherwise, CMake will use
+    # its own mechanism for finding what it considers to be the right compiler
+    # for you.
 
-    # Alternative: create the build system using the system compiler, and
-    # system installations of the pre-compiled dependencies. For macOS, the
-    # system installations include recipes installed by homebrew.
-    cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=on -DDLIB_JPEG_SUPPORT=off -DDLIB_LINK_WITH_SQLITE3=off -DDLIB_USE_CUDA=off -DDLIB_PNG_SUPPORT=off -DDLIB_GIF_SUPPORT=off -DDLIB_WEBP_SUPPORT=off -DDLIB_USE_MKL_FFT=off -DDLIB_USE_FFMPEG=off -DDLIB_NO_GUI_SUPPORT=on ..
+    # This is appropriate when, e.g., you are using the conda environment to
+    # obtain some of the pre-built dependencies. This is also appropriate when
+    # using a Homebrew-based build.
+    cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=on -DDLIB_JPEG_SUPPORT=off -DDLIB_LINK_WITH_SQLITE3=off -DDLIB_USE_CUDA=off -DDLIB_PNG_SUPPORT=off -DDLIB_GIF_SUPPORT=off -DDLIB_WEBP_SUPPORT=off -DDLIB_USE_MKL_FFT=off -DDLIB_USE_FFMPEG=off -DDLIB_NO_GUI_SUPPORT=on  ..
 
     # Another alternative: generate an Xcode project.
     cmake -G Xcode -DBUILD_SHARED_LIBS=on -DDLIB_JPEG_SUPPORT=off -DDLIB_LINK_WITH_SQLITE3=off -DDLIB_USE_CUDA=off -DDLIB_PNG_SUPPORT=off -DDLIB_GIF_SUPPORT=off -DDLIB_WEBP_SUPPORT=off -DDLIB_USE_MKL_FFT=off -DDLIB_USE_FFMPEG=off -DDLIB_NO_GUI_SUPPORT=on  ..
@@ -50,23 +54,6 @@ To build the software, run `ninja` in the build directory.
 To run the tests, run `ctest` in the build directory.
 
 ## The example programs
-
-### minuit2_example
-
-This program demonstrates the way the Minuit2 minimizer works on the Rosenbrock function in two dimensions.
-It uses increasingly strict tolerance for the minimizations and prints out a table showing how the minimizer behaves with the varying tolerance.
-It uses the same starting point each time, because the starting point is not especially critical for this function.
-
-###  minuit2_rastrigin_example
-
-This program demonstrates the way the Minuit2 minimizer works on the Rastringin function in three dimensions.
-This is a function with a large number of local minima, but a single global minimum.
-Because the result is very sensitive to the starting location of the search, the user must specify the starting point.
-
-### stacktrace_example
-
-This program creates a stack trace showing the function call chains made by the Minuit2 minimizer.
-It uses the Rosenbrock function, on which Minuit2 fares well.
 
 ### dlib_parallel_rastrigin_example
 
