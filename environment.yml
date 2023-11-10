@@ -6,7 +6,6 @@ dependencies:
   - cmake >= 3.26
   - cxx-compiler
   - fmt
-  - minuit2
   - ninja
   - tbb
   - tbb-devel
