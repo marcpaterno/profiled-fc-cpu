@@ -7,7 +7,6 @@
 #include "solution.hh"
 
 #include "dlib/optimization.h"
-#include "tbb/task_group.h"
 
 #include <chrono>
 
@@ -60,18 +59,15 @@ namespace pfc {
     pfc::shared_result& solutions;
     pfc::region const& starting_point_volume;
     pfc::protected_engine<URBG>& engine;
-    oneapi::tbb::task_group& tasks;
 
     ParallelMinimizer(FUNC& function_to_minimize,
                       pfc::shared_result& sol,
                       pfc::region const& spv,
-                      pfc::protected_engine<URBG>& eng,
-                      oneapi::tbb::task_group& tsks)
+                      pfc::protected_engine<URBG>& eng)
       : func(function_to_minimize)
       , solutions(sol)
       , starting_point_volume(spv)
       , engine(eng)
-      , tasks(tsks)
     {}
 
     void
