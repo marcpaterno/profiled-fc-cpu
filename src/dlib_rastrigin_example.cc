@@ -4,6 +4,7 @@
 #include "dlib/global_optimization.h"
 
 #include <iostream>
+#include <span>
 
 pfc::bounds
 pfc::make_bounds(int dim)
@@ -25,7 +26,6 @@ using column_vector = dlib::matrix<double, 0, 1>;
 double
 rastrigin_dlib_wrapper(column_vector const& x)
 {
-  using namespace std; // to allow std::begin to be found
   std::span xx = x;
   return pfc::rastrigin(xx);
 }

@@ -11,6 +11,7 @@
 #include <iostream>
 #include <limits>
 #include <mutex>
+#include <span>
 #include <string>
 #include <utility>
 
@@ -19,8 +20,8 @@
 inline double
 rastrigin_dlib_wrapper(pfc::column_vector const& x)
 {
-  using namespace std; // to allow std::begin to be found
-  return pfc::rastrigin({begin(x), end(x)});
+  std::span xx = x;
+  return pfc::rastrigin(xx);
 }
 
 // This is the function that does all the minimization work. We use this to
