@@ -1,12 +1,12 @@
 add_library(profiled_fc_cpu rosenbrock.cc rastrigin.cc
-                            geometry.cc solution.cc shared_result.cc)
+                            solution.cc shared_result.cc)
 target_include_directories(
   profiled_fc_cpu PUBLIC ${PROJECT_SOURCE_DIR}/src
                          ${PROJECT_SOURCE_DIR}/external/include)
 target_link_libraries(
   profiled_fc_cpu
-  PUBLIC dlib::dlib
-  PRIVATE ${CMAKE_DL_LIBS} TBB::tbb fmt::fmt)
+  PUBLIC dlib::dlib fmt::fmt
+  PRIVATE ${CMAKE_DL_LIBS} TBB::tbb)
 
 add_executable(optimization_ex optimization_ex.cc)
 target_link_libraries(optimization_ex PRIVATE dlib::dlib profiled_fc_cpu)
@@ -19,6 +19,13 @@ add_executable(dlib_parallel_rastrigin_example
 target_include_directories(dlib_parallel_rastrigin_example
                            PRIVATE ${PROJECT_SOURCE_DIR}/external/include)
 target_link_libraries(dlib_parallel_rastrigin_example
+                      PRIVATE dlib::dlib profiled_fc_cpu TBB::tbb fmt::fmt)
+
+add_executable(dlib_parallel_rastrigin_example_5d
+               dlib_parallel_rastrigin_example_5d.cc)
+target_include_directories(dlib_parallel_rastrigin_example_5d
+                           PRIVATE ${PROJECT_SOURCE_DIR}/external/include)
+target_link_libraries(dlib_parallel_rastrigin_example_5d
                       PRIVATE dlib::dlib profiled_fc_cpu TBB::tbb fmt::fmt)
 
 add_executable(dlib_parallel_rosenbrock_example

@@ -26,8 +26,7 @@ using column_vector = dlib::matrix<double, 0, 1>;
 double
 rastrigin_dlib_wrapper(column_vector const& x)
 {
-  std::span xx = x;
-  return pfc::rastrigin(xx);
+  return pfc::rastrigin(std::span(x));
 }
 
 // Structure to supply the boundaries for the minimization search region.

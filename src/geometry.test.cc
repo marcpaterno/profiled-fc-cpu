@@ -13,7 +13,7 @@ TEST_CASE("line splitting")
   region line(lower, upper);
   CHECK(line.ndims() == 1);
 
-  CHECK(pfc::detail::determine_split_dimension(line) == 0);
+  CHECK(pfc::determine_split_dimension(line) == 0);
 
   auto [a, b] = line.split();
   // line is split in half
@@ -28,7 +28,7 @@ TEST_CASE("rectangle splitting")
   region rectangle({0.0, 0.0}, {1.0, 4.0});
   CHECK(rectangle.ndims() == 2);
 
-  CHECK(pfc::detail::determine_split_dimension(rectangle) == 1);
+  CHECK(pfc::determine_split_dimension(rectangle) == 1);
 
   auto [a, b] = rectangle.split();
   CHECK(a.ndims() == 2);
@@ -58,7 +58,7 @@ TEST_CASE("square splitting")
   region square({0.0, 0.0}, {4.0, 4.0});
   CHECK(square.ndims() == 2);
 
-  CHECK(pfc::detail::determine_split_dimension(square) == 0);
+  CHECK(pfc::determine_split_dimension(square) == 0);
 
   auto [a, b] = square.split();
   CHECK(a.ndims() == 2);
@@ -80,8 +80,8 @@ TEST_CASE("square splitting")
 TEST_CASE("splitting generations")
 {
   region three_d({0.0, 0.0, 0.0}, {128.0, 256.0, 512.0});
-  std::vector<region> original{three_d};
-  std::vector<region> result = make_splits(7, original);
+  std::vector<region<pfc::column_vector>> original{three_d};
+  std::vector<region<pfc::column_vector>> result = make_splits(7, original);
   CHECK(result.size() == 128);
   double const expected_volume = three_d.volume() / 128;
   for (auto const& r : result) {
