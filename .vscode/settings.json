@@ -20,6 +20,7 @@
   },
   "cmake.configureOnOpen": false,
   "cmake.configureArgs": [
+    "-DLIB_USE_BLAS=on",
     "-DBUILD_SHARED_LIBS=on",
     "-DDLIB_JPEG_SUPPORT=off",
     "-DDLIB_LINK_WITH_SQLITE3=off",
