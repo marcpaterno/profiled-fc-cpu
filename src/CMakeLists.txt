@@ -42,3 +42,6 @@ target_include_directories(shared_result_test PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(shared_result_test PRIVATE Catch2::Catch2WithMain
                                                  profiled_fc_cpu)
 add_test(shared_result_test shared_result_test)
+
+add_executable(dlib_serial_rosenbrock_example dlib_serial_rosenbrock_example.cc)
+target_link_libraries(dlib_serial_rosenbrock_example PRIVATE dlib::dlib profiled_fc_cpu)
