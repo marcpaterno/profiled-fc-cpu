@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.26)
 project(
   profiled_fc_cpu
-  VERSION 0.3.0
+  VERSION 0.4.0
   LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED On)

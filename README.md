@@ -64,3 +64,14 @@ This program also demonstrates the use of a task-based parallel programming mode
 
 This program demonstrate the use of a simple parallelization of otherwise serial local minimization.
 It uses the Rosenbrock function in *n* dimensions; it runs in about 45 seconds in 1000 dimensions on a 12-core M2 MacBook pro.
+
+### dlib_parallel_rastrigin_example_5d
+
+This is similar to `dlib_parallel_rastrigin_example` except that it uses an argument type that has its size fixed at compile time, rather than at run time.
+This allows measurement of the performance cost of using the more flexible run time size.
+
+### dlib_serial_rosenbrock_example
+
+This does a local minimization of the Rosenbrock function in arbitrary dimensions, starting from a point specified by the user.
+It counts both the number of steps and the number of calls to the Rosenbrock function made by the minimizer.
+
