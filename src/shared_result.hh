@@ -27,6 +27,12 @@ namespace pfc {
     shared_result(shared_result&&) = delete;
     shared_result& operator=(shared_result&&) = delete;
 
+    // Return true if the collection is sorted, false if it is not.
+    bool is_sorted() const;
+
+    // Sort the collection of solutions.
+    void sort();
+
     // Insert a copy of sol into the shared result.
     // We take the argument by value because we want to make the copy.
     void insert(solution sol);

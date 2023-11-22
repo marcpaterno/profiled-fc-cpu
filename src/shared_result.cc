@@ -9,6 +9,19 @@ namespace pfc {
     : desired_min_(desired_min), max_results_(max_results)
   {}
 
+  bool
+  shared_result::is_sorted() const
+  {
+    return num_results_ > max_results_;
+  }
+
+  void
+  shared_result::sort()
+  {
+    std::scoped_lock<std::mutex> lock(guard_results_);
+    std::sort(results_.begin(), results_.end());
+  }
+
   void
   shared_result::insert(solution s)
   {
@@ -23,7 +36,7 @@ namespace pfc {
       return;
     }
 
-    if (num_results_ > max_results_) {
+    if (is_sorted()) {
       // Our vector of solutions is already sorted.
       // If s is not better than the worst, forget it.
       if (results_.back() < s) {
@@ -99,7 +112,7 @@ namespace pfc {
     if (results_.empty()) {
       return;
     }
-    
+
     // Every starting point and solution has the same 'size', which is the
     // dimenstionality of the function we're minimizing.
     auto ndim = results_.front().location.size();
