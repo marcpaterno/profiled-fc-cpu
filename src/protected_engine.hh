@@ -1,6 +1,7 @@
 #ifndef PROFILED_FC_CPU_PROTECTED_ENGINE_HH
 #define PROFILED_FC_CPU_PROTECTED_ENGINE_HH
 
+#include <ctime>
 #include <random>
 
 namespace pfc {
@@ -14,6 +15,9 @@ namespace pfc {
   class protected_engine {
   public:
     using result_type = typename URBG::result_type;
+
+    protected_engine() = default;
+    protected_engine(std::time_t t);
     result_type operator()();
 
     static constexpr result_type min();
@@ -25,6 +29,10 @@ namespace pfc {
     std::mutex m_;
     engine_type e_;
   };
+
+  template <std::uniform_random_bit_generator URBG>
+  protected_engine<URBG>::protected_engine(std::time_t t) : e_(t)
+  {}
 
   template <std::uniform_random_bit_generator URBG>
   typename protected_engine<URBG>::result_type
