@@ -53,7 +53,9 @@ namespace pfc {
   //    2. recording the resulting minimum in the shared solution.
   //    3. if the shared solution says we are not done, generate a new
   //       starting point keep trying.
-  template <typename FUNC, std::uniform_random_bit_generator URBG, typename REGION = pfc::region<pfc::column_vector>>
+  template <typename FUNC,
+            std::uniform_random_bit_generator URBG,
+            typename REGION = pfc::region<pfc::column_vector>>
   struct ParallelMinimizer {
     FUNC& func;
     pfc::shared_result& solutions;
@@ -74,9 +76,10 @@ namespace pfc {
     operator()() const
     {
       // Loop until we have a good enough solution.
+      // Note that if another task find a solution quickly enough, we may end
+      // never entering the loop.
       while (!solutions.is_done()) {
-        pfc::column_vector starting_point;
-        starting_point =
+        auto starting_point =
           pfc::random_point_within(starting_point_volume, engine);
         pfc::solution result = pfc::do_one_minimization(func, starting_point);
         solutions.insert(result);

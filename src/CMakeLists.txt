@@ -52,3 +52,15 @@ add_test(shared_result_test shared_result_test)
 
 add_executable(dlib_serial_rosenbrock_example dlib_serial_rosenbrock_example.cc)
 target_link_libraries(dlib_serial_rosenbrock_example PRIVATE dlib::dlib profiled_fc_cpu)
+
+add_executable(dlib_serial_helical_valley_example
+               dlib_serial_helical_valley_example.cc)
+target_link_libraries(dlib_serial_helical_valley_example
+                      PRIVATE dlib::dlib profiled_fc_cpu)
+
+add_executable(dlib_parallel_helical_valley_example
+               dlib_parallel_helical_valley_example.cc)
+target_include_directories(dlib_parallel_helical_valley_example
+                           PRIVATE ${PROJECT_SOURCE_DIR}/external/include)
+target_link_libraries(dlib_parallel_helical_valley_example
+                      PRIVATE dlib::dlib profiled_fc_cpu TBB::tbb fmt::fmt)
