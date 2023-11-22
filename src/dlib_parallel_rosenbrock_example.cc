@@ -11,8 +11,8 @@
 #include <chrono>
 #include <iostream>
 #include <limits>
-#include <string>
 #include <span>
+#include <string>
 #include <utility>
 
 // This is a simple wrapper to adapt the pfc::rastrigin function to the
@@ -21,7 +21,7 @@ inline double
 rosenbrock_dlib_wrapper(pfc::column_vector const& x)
 {
   using namespace std; // to allow std::begin to be found
-  std::span  xx = x;
+  std::span xx = x;
   return pfc::vec_rosenbrock(xx);
 }
 
@@ -44,10 +44,8 @@ do_all_work(long ndim, pfc::shared_result& solutions, int num_starting_points)
   pfc::protected_engine<std::mt19937> engine;
 
   for (int i = 0; i != num_starting_points; ++i) {
-    pfc::ParallelMinimizer minimizer(rosenbrock_dlib_wrapper,
-                                     solutions,
-                                     starting_point_volume,
-                                     engine);
+    pfc::ParallelMinimizer minimizer(
+      rosenbrock_dlib_wrapper, solutions, starting_point_volume, engine);
     // We have to give a callable with no arguments to tasks.run, so we need
     // a lambda expression that captures all the arguments to be used
     // for the call to minimizer.

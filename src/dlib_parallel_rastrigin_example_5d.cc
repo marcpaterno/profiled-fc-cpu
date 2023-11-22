@@ -89,5 +89,5 @@ main()
             << solutions.num_results() / running_time
             << " solutions per millisecond\n.";
 
-               solutions.print_report(std::cout);
+  solutions.print_report(std::cout);
 }
