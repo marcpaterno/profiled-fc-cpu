@@ -34,6 +34,9 @@ namespace pfc {
   template <int N>
   std::ostream& operator<<(std::ostream& os, fixed_vector<N> const& cv);
 
+  template <typename VEC>
+  std::ostream& operator<<(std::ostream& os, region<VEC> const& v);
+
   // Structure to supply the boundaries for the minimization search region.
   // This mostly exists to allow us to use structured binding on the return
   // value of make_bounds.
@@ -50,6 +53,7 @@ namespace pfc {
   // A region represents a region in an n-dimensional space (R^n).
   // A region is specified by using a column vector of lower bounds, and another
   // column vector (which must be the same length) of upper bounds.
+
 
   template <typename VEC>
   class region {
@@ -96,7 +100,7 @@ namespace pfc {
     column_vector lower_;
     column_vector upper_;
 
-    friend std::ostream& operator<<(std::ostream& os, region const& r);
+    friend std::ostream& operator<< <>(std::ostream& os, region const& r);
   };
 
   // Return true if the given point is within the region (including on its
