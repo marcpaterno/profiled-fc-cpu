@@ -53,8 +53,8 @@ namespace pfc {
   //    2. recording the resulting minimum in the shared solution.
   //    3. if the shared solution says we are not done, generate a new
   //       starting point keep trying.
-  template <typename FUNC,
-            std::uniform_random_bit_generator URBG,
+  template <std::uniform_random_bit_generator URBG,
+            typename FUNC,
             typename REGION = pfc::region<pfc::column_vector>>
   struct ParallelMinimizer {
     FUNC& func;

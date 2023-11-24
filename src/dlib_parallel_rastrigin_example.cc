@@ -41,12 +41,10 @@ do_all_work(long ndim, pfc::shared_result& solutions, int num_starting_points)
   pfc::region const starting_point_volume =
     pfc::make_box_in_n_dim(ndim, -10.0, 10.0);
   pfc::protected_engine<std::mt19937> engine;
+  pfc::ParallelMinimizer minimizer(
+    rastrigin_dlib_wrapper, solutions, starting_point_volume, engine);
 
   for (int i = 0; i != num_starting_points; ++i) {
-
-    pfc::ParallelMinimizer minimizer(
-      rastrigin_dlib_wrapper, solutions, starting_point_volume, engine);
-
     // We have to give a callable with no arguments to tasks.run, so we need
     // a lambda expression that captures all the arguments to be used
     // for the call to minimizer.

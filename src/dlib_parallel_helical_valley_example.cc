@@ -36,9 +36,10 @@ do_all_work(long ndim, pfc::shared_result& solutions, int num_starting_points)
 
   pfc::CountedHelicalValley helical_valley;
 
+  pfc::ParallelMinimizer minimizer(
+    helical_valley, solutions, starting_point_volume, engine);
+
   for (int i = 0; i != num_starting_points; ++i) {
-    pfc::ParallelMinimizer minimizer(
-      helical_valley, solutions, starting_point_volume, engine);
     // We have to give a callable with no arguments to tasks.run, so we need
     // a lambda expression that captures all the arguments to be used
     // for the call to minimizer.
