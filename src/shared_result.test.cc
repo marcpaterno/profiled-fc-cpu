@@ -27,7 +27,7 @@ TEST_CASE("not filled")
 {
   shared_result solutions(1.e-6, 2);
   CHECK(solutions.empty());
-  CHECK(solutions.num_results() == 0);
+  CHECK(solutions.num_attempts() == 0);
 
   solution s1;
   s1.start = column_vector({1.0});
@@ -40,7 +40,7 @@ TEST_CASE("not filled")
   solutions.insert(s1);
   CHECK(!solutions.is_done());
   CHECK(!solutions.empty());
-  CHECK(solutions.num_results() == 1);
+  CHECK(solutions.num_attempts() == 1);
 
   solution s2;
   s2.start = column_vector({4.0});
@@ -52,7 +52,7 @@ TEST_CASE("not filled")
   s2.tstop = now_in_milliseconds();
   solutions.insert(s2);
   CHECK(!solutions.is_done());
-  CHECK(solutions.num_results() == 2);
+  CHECK(solutions.num_attempts() == 2);
 
   solution s3;
   s3.start = column_vector({0.5});
@@ -64,7 +64,7 @@ TEST_CASE("not filled")
   s3.tstop = now_in_milliseconds();
   solutions.insert(s3);
   CHECK(solutions.is_done());
-  CHECK(solutions.num_results() == 3);
+  CHECK(solutions.num_attempts() == 3);
 
   REQUIRE_THAT(solutions.best().value, Catch::Matchers::WithinAbs(0.0, 1.e-6));
 }

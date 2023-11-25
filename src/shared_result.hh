@@ -51,10 +51,10 @@ namespace pfc {
     friend std::ostream& operator<<(std::ostream& os, shared_result const& r);
 
     // Return a copy of the contained solutions.
-    std::vector<solution> to_vector();
+    std::vector<solution> solutions() const;
 
-    // Report how many results have been found.
-    long num_results() const;
+    // Report how many minimization attempts have been done.
+    long num_attempts() const;
 
     // Report whether we have any solutions.
     bool empty() const;
@@ -71,6 +71,8 @@ namespace pfc {
     bool done_ = false;
     std::size_t max_results_;
   };
+
+  void print_report(std::vector<solution> const& solutions, std::ostream& os);
 } // namespace pfc
 
 #endif

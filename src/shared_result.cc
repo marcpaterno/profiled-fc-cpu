@@ -85,14 +85,14 @@ namespace pfc {
   }
 
   std::vector<solution>
-  shared_result::to_vector()
+  shared_result::solutions() const
   {
     std::scoped_lock<std::mutex> lock(guard_results_);
     return results_;
   }
 
   long
-  shared_result::num_results() const
+  shared_result::num_attempts() const
   {
     std::scoped_lock<std::mutex> lock(guard_results_);
     return num_results_;
@@ -109,13 +109,19 @@ namespace pfc {
   shared_result::print_report(std::ostream& os) const
   {
     std::scoped_lock<std::mutex> lock(guard_results_);
-    if (results_.empty()) {
+    pfc::print_report(results_, os);
+  }
+
+  void
+  print_report(std::vector<solution> const& results, std::ostream& os)
+  {
+    if (results.empty()) {
       return;
     }
 
     // Every starting point and solution has the same 'size', which is the
     // dimenstionality of the function we're minimizing.
-    auto ndim = results_.front().location.size();
+    auto ndim = results.front().location.size();
 
     // Print a header for the data.
     os << "idx\ttstart\t";
@@ -126,7 +132,7 @@ namespace pfc {
       os << 'x' << i << '\t';
     os << "min\tdist\tnsteps\n";
 
-    for (auto const& result : results_) {
+    for (auto const& result : results) {
       os << result << '\n';
     }
   }
