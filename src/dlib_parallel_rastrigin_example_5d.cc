@@ -40,7 +40,7 @@ main()
   int const num_starting_points = oneapi::tbb::info::default_concurrency();
 
   auto start = pfc::now_in_milliseconds();
-  auto starting_volume = pfc::make_box_in_dim<5>(-100.0, 100.0);
+  auto starting_volume = pfc::make_box_in_dim<5>(-10.0, 10.0);
   auto [solutions, num_attempts] = pfc::find_global_minimum_fixed(
     rastrigin_dlib_wrapper<5>, num_starting_points, starting_volume, 1.0e-6);
   auto stop = pfc::now_in_milliseconds();

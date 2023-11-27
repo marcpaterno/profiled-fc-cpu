@@ -35,7 +35,7 @@ main(int argc, char** argv)
 
   // We will start up as many tasks as TBB says we have threads.
   int const num_starting_points = oneapi::tbb::info::default_concurrency();
-  auto starting_volume = pfc::make_box_in_n_dim(ndim, -100.0, 100.0);
+  auto starting_volume = pfc::make_box_in_n_dim(ndim, -10.0, 10.0);
 
   // Create shared state for answer.
   // We're done when we have found a minimum with a value < 1.0e-6.
