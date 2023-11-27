@@ -35,12 +35,13 @@ main(int argc, char** argv)
 
   // We will start up as many tasks as TBB says we have threads.
   int const num_starting_points = oneapi::tbb::info::default_concurrency();
+  auto starting_volume = pfc::make_box_in_n_dim(ndim, -100.0, 100.0);
 
   // Create shared state for answer.
   // We're done when we have found a minimum with a value < 1.0e-6.
   auto start = pfc::now_in_milliseconds();
   auto [solutions, num_attempts] = pfc::find_global_minimum(
-    rastrigin_dlib_wrapper, ndim, num_starting_points, 1.e-6);
+    rastrigin_dlib_wrapper, ndim, starting_volume, num_starting_points, 1.e-6);
   auto stop = pfc::now_in_milliseconds();
 
   auto running_time = stop - start;

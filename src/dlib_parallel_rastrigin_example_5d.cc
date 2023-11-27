@@ -40,8 +40,9 @@ main()
   int const num_starting_points = oneapi::tbb::info::default_concurrency();
 
   auto start = pfc::now_in_milliseconds();
+  auto starting_volume = pfc::make_box_in_dim<5>(-100.0, 100.0);
   auto [solutions, num_attempts] = pfc::find_global_minimum_fixed(
-    rastrigin_dlib_wrapper<5>, num_starting_points, 1.0e-6);
+    rastrigin_dlib_wrapper<5>, num_starting_points, starting_volume, 1.0e-6);
   auto stop = pfc::now_in_milliseconds();
   auto running_time = stop - start;
 
@@ -54,9 +55,8 @@ main()
   // We print this count information to standard error so that redirecting
   // standard output to a file does not result in this text also being
   // redirected.
-  std::cerr << "A total of " << num_attempts
-            << " minimizations were done in " << running_time
-            << " milliseconds.\n"
+  std::cerr << "A total of " << num_attempts << " minimizations were done in "
+            << running_time << " milliseconds.\n"
             << num_attempts / running_time << " solutions per millisecond\n.";
 
   pfc::print_report(solutions, std::cout);

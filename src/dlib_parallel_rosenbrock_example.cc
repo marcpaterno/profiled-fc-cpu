@@ -36,10 +36,16 @@ main(int argc, char** argv)
 
   int const num_starting_points = oneapi::tbb::info::default_concurrency();
 
+  auto starting_volume = pfc::make_box_in_n_dim(ndim, -100.0, 100.0);
+
   // Create shared state for answer.
   // We're done when we have found a minimum with a value < 1.0e-6.
-  auto [solutions, num_attempts] = pfc::find_global_minimum(
-    rosenbrock_dlib_wrapper, ndim, num_starting_points, 1.0e-6);
+  auto [solutions, num_attempts] =
+    pfc::find_global_minimum(rosenbrock_dlib_wrapper,
+                             ndim,
+                             starting_volume,
+                             num_starting_points,
+                             1.0e-6);
   if (solutions.empty()) {
     std::cerr << "No solutions were found!\n";
     return 1;

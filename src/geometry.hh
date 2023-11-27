@@ -54,7 +54,6 @@ namespace pfc {
   // A region is specified by using a column vector of lower bounds, and another
   // column vector (which must be the same length) of upper bounds.
 
-
   template <typename VEC>
   class region {
   public:

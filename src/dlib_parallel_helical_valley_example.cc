@@ -27,8 +27,9 @@ main()
   // We're done when we have found a minimum with a value < 1.0e-6.
   double const tolerance = 1.0e-6;
   pfc::CountedHelicalValley helical_valley;
+  auto starting_volume = pfc::make_box_in_n_dim(ndim, -1.0e6, 1.0e6);
   auto [solutions, num_attempts] = pfc::find_global_minimum(
-    helical_valley, ndim, num_starting_points, tolerance);
+    helical_valley, ndim, starting_volume, num_starting_points, tolerance);
   if (solutions.empty()) {
     std::cerr << "No solutions were found!\n";
     return 1;

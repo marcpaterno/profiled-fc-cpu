@@ -54,7 +54,7 @@ namespace pfc {
 
   // Specialization for a function type.
   template <typename R, typename... Args>
-  struct callable_traits<R(Args...), false>
-    : callable_traits<R (*)(Args...)> {};
+  struct callable_traits<R(Args...), false> : callable_traits<R (*)(Args...)> {
+  };
 
 }
