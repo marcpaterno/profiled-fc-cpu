@@ -42,7 +42,7 @@ namespace pfc {
     // the minimization routine will write the answer directly into
     // result.location so no extra copying is needed.
     result.location = starting_point;
-    auto [f_value, nsteps] = dlib::find_min_using_approximate_derivatives(
+    auto [f_value, nsteps, steps] = dlib::find_min_using_approximate_derivatives(
       dlib::bfgs_search_strategy(),
       dlib::objective_delta_stop_strategy(1.0e-6),
       f,

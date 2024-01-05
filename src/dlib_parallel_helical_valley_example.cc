@@ -23,11 +23,15 @@ main()
   int const num_starting_points = oneapi::tbb::info::default_concurrency();
   std::cerr << "We are using: " << num_starting_points << " starting points\n";
 
-  // Create shared state for answer.
-  // We're done when we have found a minimum with a value < 1.0e-6.
+  // We will be done when we find a minimum function value that is less than
+  // tolerance.
   double const tolerance = 1.0e-6;
-  pfc::CountedHelicalValley helical_valley;
+
+  // We will search withing this starting_volume.
   auto starting_volume = pfc::make_box_in_n_dim(ndim, -1.0e6, 1.0e6);
+
+  pfc::CountedHelicalValley helical_valley;
+
   auto [solutions, num_attempts] = pfc::find_global_minimum(
     helical_valley, ndim, starting_volume, num_starting_points, tolerance);
   if (solutions.empty()) {

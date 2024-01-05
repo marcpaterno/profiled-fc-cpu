@@ -65,7 +65,7 @@ main(int argc, char** argv)
   auto location = starting_point;
   auto tstart = now_in_milliseconds();
 
-  auto [f_value, nsteps] = dlib::find_min_using_approximate_derivatives(
+  auto [f_value, nsteps, steps] = dlib::find_min_using_approximate_derivatives(
     dlib::bfgs_search_strategy(),
     dlib::objective_delta_stop_strategy(1.0e-6),
     func,
