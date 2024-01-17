@@ -78,10 +78,10 @@ namespace pfc {
   }
 
   bool
-  shared_result::is_done() const
+  shared_result::is_done(long max_attempts) const
   {
     std::scoped_lock<std::mutex> lock(guard_results_);
-    return done_;
+    return done_ || (num_results_ > max_attempts);
   }
 
   std::vector<solution>

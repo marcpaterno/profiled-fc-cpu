@@ -64,3 +64,10 @@ target_include_directories(dlib_parallel_helical_valley_example
                            PRIVATE ${PROJECT_SOURCE_DIR}/external/include)
 target_link_libraries(dlib_parallel_helical_valley_example
                       PRIVATE profiled_fc_cpu TBB::tbb fmt::fmt)
+add_executable(hastings_acos_fitting hastings_acos_fitting.cc)
+target_include_directories(hastings_acos_fitting PRIVATE ${PROJECT_SOURCE_DIR}/external/include)
+target_link_libraries(hastings_acos_fitting PRIVATE profiled_fc_cpu TBB::tbb)
+
+add_executable(atan2_fitting atan2_fitting.cc)
+target_include_directories(atan2_fitting PRIVATE ${PROJECT_SOURCE_DIR}/external/include)
+target_link_libraries(atan2_fitting PRIVATE profiled_fc_cpu TBB::tbb)
