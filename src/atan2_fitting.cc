@@ -10,7 +10,7 @@ inline double
 better_atan_core(double z, column_vector const& a)
 {
   double t1= a(0) * z;
-  double t2 = z*(z-1)*(a(1) + a(2)*z);
+  double t2 = z*(z-1)*(a(1) + a(2)*z*(a(3) + z));
   return t1 - t2;
 }
 
@@ -42,9 +42,9 @@ objective_function(column_vector const& params)
 int
 main()
 {
-  long const ndim = 3;
-  double const tolerance = 1.e-5;
-  long const num_starting_points = 12;
+  long const ndim = 4;
+  double const tolerance = 1.e-6;
+  long const num_starting_points = 20;
   long max_attempts = 1 * 1000;
   auto starting_volume = pfc::make_box_in_n_dim(ndim, -1.0, 1.0);
   auto [solutions, num_attempts] = pfc::find_global_minimum(objective_function,

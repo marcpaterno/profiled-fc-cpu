@@ -4,6 +4,7 @@
 #include "solution.hh"
 
 #include <iosfwd>
+#include <limits>
 #include <mutex>
 #include <vector>
 
@@ -44,7 +45,7 @@ namespace pfc {
     // naive; we are done when the best solution has found a local minimum with
     // value less than the value of desired_min used to configure the
     // shared_result object.
-    bool is_done(long num_attempts = 0) const;
+    bool is_done(long num_attempts = std::numeric_limits<long>::max()) const;
 
     // Write out all the contained solutions in a format suitable for automated
     // processing.
